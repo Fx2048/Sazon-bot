@@ -6,7 +6,7 @@ from fuzzywuzzy import process  # Para similitud en nombres de distritos
 import re
 
 # Cargar el API key de OpenAI desde Streamlit Secrets (si se requiere para otros fines)
-# client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Configuración inicial de la página
 st.set_page_config(page_title="SazónBot", page_icon=":pot_of_food:")
