@@ -97,7 +97,7 @@ if district_input := st.chat_input("¿De dónde nos visitas?"):
         filtered_menu = filter_menu_by_district(menu, district_input)
         menu_display = format_menu(filtered_menu)
 
-        response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
+        response = f"Gracias por proporcionar tu distrito: **{district_input}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
 
     # Mostrar la respuesta del asistente
     with st.chat_message("assistant", avatar="🍲"):
