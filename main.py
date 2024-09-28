@@ -46,7 +46,6 @@ def verify_district(prompt, districts):
         return best_match
     return None
 
-from fuzzywuzzy import process
 
 # Función mejorada para extraer el pedido y la cantidad usando similitud
 def extract_order_and_quantity(prompt, menu):
