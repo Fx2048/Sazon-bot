@@ -1,0 +1,12 @@
+{
+  "pedido": [
+    {
+      "plato": "arroz con pollo",
+      "cantidad": 1
+    },
+    {
+      "plato": "tallarín verde",
+      "cantidad": 1
+    }
+  ]
+}
