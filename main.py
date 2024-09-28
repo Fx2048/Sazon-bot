@@ -27,6 +27,11 @@ def load_districts(csv_file):
     districts = pd.read_csv(csv_file)
     return districts['Distrito'].tolist()
 
+# Función para filtrar el menú por distrito
+def filter_menu_by_district(menu, district):
+    # Suponiendo que el menú tenga una columna "Distrito" para filtrar
+    return menu[menu['Distrito'] == district]  # Modificar según tu estructura de menú
+
 # Función para mostrar el menú en un formato más amigable
 def format_menu(menu):
     if menu.empty:
@@ -40,74 +45,22 @@ def format_menu(menu):
         
     return "\n\n".join(formatted_menu)
 
-# Cargar menú y distritos (asegúrate de que los archivos CSV existen)
-menu = load_menu("carta.csv")  # Archivo 'menu.csv' debe tener columnas: Plato, Descripción, Precio
-districts = load_districts("distritos.csv")  # Archivo 'distritos.csv' debe tener una columna: Distrito
+# Cargar el menú y los distritos
+menu = load_menu("carta.csv")
+districts = load_districts("distritos.csv")
 
 # Estado inicial del chatbot
 initial_state = [
     {"role": "system", "content": "You are SazónBot. A friendly assistant helping customers with their lunch orders."},
     {
         "role": "assistant",
-        "content": f"👨‍🍳¿Qué te puedo ofrecer?\n\nEste es el menú del día:\n\n{format_menu(menu)}",
+        "content": f"👨‍🍳 Antes de comenzar, ¿de dónde nos visitas? Por favor, menciona tu distrito (por ejemplo: Miraflores)."
     },
 ]
 
-# Función para registrar los pedidos en un archivo
-def save_order(order, total_price):
-    with open("orders.csv", "a") as f:
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        f.write(f"{timestamp}, {order}, {total_price}\n")
-
-# Función para verificar si un pedido es válido
-def is_valid_order(order, menu):
-    return all(item in menu['Plato'].values for item in order)
-
-# Función para verificar si el distrito es válido
-def is_valid_district(district, districts):
-    return district in districts
-
-# Función para clasificar el plato
-def classify_order(prompt, menu):
-    for word in prompt.split(","):
-        if word in menu['Plato'].values:
-            return word  # Retorna el nombre del plato encontrado
-    return None
-
-# Función para manejar el pedido del usuario
-def handle_order(prompt, menu):
-    # Clasificar el pedido
-    order = classify_order(prompt, menu)
-
-    # Validar si se seleccionó un plato
-    if not order:
-        return "😊 No has seleccionado ningún plato del menú. Por favor revisa."
-
-    # Responder con el resumen del pedido y mostrar los distritos
-    district_list = ", ".join(districts)
-
-    return f"Tu pedido ha sido registrado: {order}. \n\nPor favor selecciona un distrito de entrega: {district_list}"
-
-# Función para verificar el distrito
-def verify_district(prompt, districts):
-    for word in districts:  # Iterar sobre la lista de distritos
-        if word in prompt:  # Comprobar si el distrito está en el texto del prompt
-            return word  # Retorna el distrito encontrado
-    return None
-
-# Función para ajustar el tono de la respuesta
-def adjust_tone(response, tone="amigable"):
-    if tone == "amigable":
-        return f"😊 {response}"
-    elif tone == "formal":
-        return f"Estimado cliente, {response}"
-    else:
-        return response
-
-
 # Inicializar la conversación si no existe en la sesión
-#if "messages" not in st.session_state:
- #   st.session_state["messages"] = deepcopy(initial_state)
+if "messages" not in st.session_state:
+    st.session_state["messages"] = deepcopy(initial_state)
 
 # Botón para limpiar la conversación
 clear_button = st.button("Limpiar Conversación", key="clear")
@@ -118,48 +71,45 @@ if clear_button:
 for message in st.session_state.messages:
     if message["role"] == "system":
         continue
-    elif message["role"] == "assistant":
-        with st.chat_message(message["role"], avatar="🍲"):
-            st.markdown(message["content"])
+    with st.chat_message(message["role"], avatar="🍲" if message["role"] == "assistant" else "👤"):
+        st.markdown(message["content"])
+
+# Entrada del usuario para el distrito
+if district_input := st.chat_input("¿De dónde nos visitas?"):
+    with st.chat_message("user", avatar="👤"):
+        st.markdown(district_input)
+
+    # Verificar el distrito
+    district = verify_district(district_input, districts)
+
+    if not district:
+        response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts)}."
     else:
-        with st.chat_message(message["role"], avatar="👤"):
-            st.markdown(message["content"])
+        # Filtrar el menú por distrito y mostrarlo
+        filtered_menu = filter_menu_by_district(menu, district)
+        menu_display = format_menu(filtered_menu)
+
+        response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
+
+    # Mostrar la respuesta del asistente
+    with st.chat_message("assistant", avatar="🍲"):
+        st.markdown(response)
 
 # Entrada del usuario para el pedido
 if prompt := st.chat_input("¿Qué te gustaría pedir?"):
     with st.chat_message("user", avatar="👤"):
         st.markdown(prompt)
 
-    # Procesar el pedido y generar la respuesta
-    response = handle_order(prompt, menu)
+    # Procesar el pedido
+    order = classify_order(prompt, menu)  # Asegúrate de que `classify_order` considere el menú filtrado
+    if not order:
+        response = "😊 No has seleccionado ningún plato del menú. Por favor revisa."
+    else:
+        response = f"Tu pedido ha sido registrado: **{order}**. ¡Gracias!"
 
     # Mostrar la respuesta del asistente
     with st.chat_message("assistant", avatar="🍲"):
         st.markdown(response)
 
     # Guardar el pedido en el estado
-    st.session_state["last_order"] = prompt  # Guarda el pedido en el estado
-
-    # Entrada del usuario para el distrito
-    district_input = st.chat_input("Por favor selecciona un distrito de entrega: Miraflores, San Isidro, Barranco")
-
-    if district_input:  # Verifica que el distrito se haya ingresado
-        with st.chat_message("user", avatar="👤"):
-            st.markdown(district_input)
-
-        # Verificar el distrito y responder
-        district = verify_district(district_input, districts)
-        
-        if district:
-            response = f"Gracias por proporcionar tu distrito: {district}. Procederemos a entregar tu pedido allí."
-        else:
-            response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts)}"
-
-        with st.chat_message("assistant", avatar="🍲"):
-            st.markdown(response)
-
-
-
-
-
-
+    st.session_state["last_order"] = prompt
