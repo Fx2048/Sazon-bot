@@ -3,6 +3,8 @@ import streamlit as st
 from datetime import datetime
 from copy import deepcopy
 from openai import OpenAI
+import re
+from fuzzywuzzy import process  # Para similitud en nombres de distritos
 
 # Cargar el API key de OpenAI desde Streamlit Secrets
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -127,3 +129,91 @@ if user_input := st.chat_input("Escribe aquí..."):
      # Guardar el mensaje en la sesión
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.messages.append({"role": "assistant", "content": response})
+
+
+# Función para extraer el pedido y la cantidad usando expresiones regulares
+def extract_order_and_quantity(prompt, menu):
+    # Expresión regular para identificar cantidades (e.g., "2 lomo saltado, 1 ceviche")
+    pattern = r"(\d+)\s*([^\d,]+)"
+    orders = re.findall(pattern, prompt.lower())  # Encontrar todas las coincidencias
+    
+    order_dict = {}
+    for quantity, dish in orders:
+        # Limpiar los nombres de los platos para evitar errores de mayúsculas/minúsculas
+        dish_cleaned = dish.strip()
+        # Buscar si el plato está en el menú
+        for menu_item in menu['Plato']:
+            if dish_cleaned in menu_item.lower():  # Verificar si el nombre coincide
+                order_dict[menu_item] = int(quantity)  # Añadir al diccionario con la cantidad
+        
+    return order_dict
+
+# Modificación de la función classify_order para manejar múltiples platos
+def classify_order(prompt, menu):
+    order_dict = extract_order_and_quantity(prompt, menu)
+    return order_dict if order_dict else None
+def verify_order_with_menu(order_dict, menu):
+    available_orders = {}
+    unavailable_orders = []
+
+    # Iterar sobre el diccionario de pedidos y verificar con el menú
+    for dish, quantity in order_dict.items():
+        if dish in menu['Plato'].values:
+            available_orders[dish] = quantity
+        else:
+            unavailable_orders.append(dish)
+    
+    return available_orders, unavailable_orders
+
+
+
+# Modificar la función verify_district para encontrar el distrito más similar
+def verify_district(prompt, districts):
+    district_list = districts['Distrito'].tolist()
+    best_match, similarity = process.extractOne(prompt, district_list)
+    if similarity > 75:  # Usar un umbral de similitud (75%)
+        return best_match
+    return None
+
+# Sistema de estados basado en etapas del flujo de conversación
+def update_conversation_state(state, response):
+    if state == "awaiting_district":
+        return "awaiting_order"  # Si se confirmó el distrito, se pasa a esperar el pedido
+    elif state == "awaiting_order":
+        return "order_confirmed"  # Si se confirmó el pedido, se pasa al estado final
+    return state
+
+# Modificar el flujo del chatbot para que cambie de estado dinámicamente
+if not st.session_state["district_selected"]:
+    district = verify_district(user_input, districts)
+    if not district:
+        response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts['Distrito'].tolist())}."
+    else:
+        st.session_state["district_selected"] = True
+        st.session_state["current_district"] = district
+        st.session_state["state"] = update_conversation_state("awaiting_district", district)
+        filtered_menu = filter_menu_by_district(menu, district)
+        menu_display = format_menu(filtered_menu)
+        response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
+else:
+    order_dict = classify_order(user_input, filtered_menu)
+    if not order_dict:
+        response = "😊 No has seleccionado ningún plato del menú. Por favor revisa."
+    else:
+        available_orders, unavailable_orders = verify_order_with_menu(order_dict, filtered_menu)
+        if unavailable_orders:
+            response = f"Lo siento, los siguientes platos no están disponibles: {', '.join(unavailable_orders)}."
+        else:
+            response = f"Tu pedido ha sido registrado: {', '.join([f'{qty} x {dish}' for dish, qty in available_orders.items()])}. ¡Gracias!"
+            st.session_state["state"] = update_conversation_state("awaiting_order", response)
+
+# Plantillas de respuesta
+response_templates = {
+    "awaiting_district": "Por favor, indícanos tu distrito para comenzar.",
+    "invalid_district": "Lo siento, no entregamos en ese distrito. Aquí están los disponibles: {available_districts}.",
+    "awaiting_order": "Gracias por confirmar tu distrito. Aquí está el menú disponible: {menu}. ¿Qué te gustaría pedir?",
+    "order_confirmed": "Tu pedido ha sido registrado. ¿Te gustaría agregar algo más?",
+    "invalid_order": "Los siguientes platos no están disponibles: {unavailable_orders}.",
+}
+
+
