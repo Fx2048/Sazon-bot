@@ -76,11 +76,15 @@ initial_state = [
 # Inicializar la conversación si no existe en la sesión
 if "messages" not in st.session_state:
     st.session_state["messages"] = deepcopy(initial_state)
+    st.session_state["district_selected"] = False  # Indica si ya se seleccionó un distrito
+    st.session_state["current_district"] = None  # Almacena el distrito actual
 
 # Botón para limpiar la conversación
 clear_button = st.button("Limpiar Conversación", key="clear")
 if clear_button:
     st.session_state["messages"] = deepcopy(initial_state)
+    st.session_state["district_selected"] = False
+    st.session_state["current_district"] = None
 
 # Mostrar el historial de la conversación
 for message in st.session_state.messages:
@@ -89,42 +93,44 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar="🍲" if message["role"] == "assistant" else "👤"):
         st.markdown(message["content"])
 
-# Entrada del usuario para el distrito
-if district_input := st.chat_input("¿De dónde nos visitas?"):
+if not st.session_state["district_selected"]:
+    if district_input := st.chat_input("¿De dónde nos visitas?"):
     with st.chat_message("user", avatar="👤"):
         st.markdown(district_input)
+        
+        # Verificar el distrito
+        district = verify_district(district_input, districts)
+        if not district:
+            response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts)}."
+        else:
+            st.session_state["district_selected"] = True
+            st.session_state["current_district"] = district
+            
+            # Filtrar el menú por distrito y mostrarlo
+            filtered_menu = filter_menu_by_district(menu, district_input)
+            menu_display = format_menu(filtered_menu)
 
-    # Verificar el distrito
-    district = verify_district(district_input, districts)
-
-    if not district:
-        response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts)}."
-    else:
-        # Filtrar el menú por distrito y mostrarlo
-        filtered_menu = filter_menu_by_district(menu, district_input)
-        menu_display = format_menu(filtered_menu)
-
-        response = f"Gracias por proporcionar tu distrito: **{district_input}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
-
-    # Mostrar la respuesta del asistente
-    with st.chat_message("assistant", avatar="🍲"):
-        st.markdown(response)
-
-# Entrada del usuario para el pedido
-if prompt := st.chat_input("¿Qué te gustaría pedir?"):
-    with st.chat_message("user", avatar="👤"):
-        st.markdown(prompt)
-
-    # Procesar el pedido
-    order = classify_order(prompt, menu)  # Asegúrate de que `classify_order` considere el menú filtrado
-    if not order:
-        response = "😊 No has seleccionado ningún plato del menú. Por favor revisa."
-    else:
-        response = f"Tu pedido ha sido registrado: **{order}**. ¡Gracias!"
+            response = f"Gracias por proporcionar tu distrito: **{district_input}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
 
     # Mostrar la respuesta del asistente
     with st.chat_message("assistant", avatar="🍲"):
         st.markdown(response)
+else:
+    # Entrada del usuario para el pedido
+    if prompt := st.chat_input("¿Qué te gustaría pedir?"):
+        with st.chat_message("user", avatar="👤"):
+            st.markdown(prompt)
+
+        # Procesar el pedido
+        order = classify_order(prompt, menu)  # Asegúrate de que `classify_order` considere el menú filtrado
+        if not order:
+            response = "😊 No has seleccionado ningún plato del menú. Por favor revisa."
+        else:
+            response = f"Tu pedido ha sido registrado: **{order}**. ¡Gracias!"
+    
+        # Mostrar la respuesta del asistente
+        with st.chat_message("assistant", avatar="🍲"):
+            st.markdown(response)
 
     # Guardar el pedido en el estado
     st.session_state["last_order"] = prompt
