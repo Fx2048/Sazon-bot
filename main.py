@@ -95,8 +95,8 @@ for message in st.session_state.messages:
 
 if not st.session_state["district_selected"]:
     if district_input := st.chat_input("¿De dónde nos visitas?"):
-    with st.chat_message("user", avatar="👤"):
-        st.markdown(district_input)
+        with st.chat_message("user", avatar="👤"):
+            st.markdown(district_input)
         
         # Verificar el distrito
         district = verify_district(district_input, districts)
