@@ -30,7 +30,7 @@ def load_districts(csv_file):
 # Función para filtrar el menú por distrito
 def filter_menu_by_district(menu, district):
     # Filtramos menú por la columna "Distrito Disponible" y vemos que platos tienen disponibles
-    id_distrito = districts.loc[districts['Distrito'] == district, "ID"].values
+    id_distrito = districts.loc[districts['Distrito'] == district, "ID"].values[0]
     regex_pattern = r'(^|,){}(,|$)'.format(id_distrito)
     return menu[menu['Distrito Disponible'].str.contains(regex_pattern)] 
 
