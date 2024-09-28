@@ -94,7 +94,7 @@ if district_input := st.chat_input("¿De dónde nos visitas?"):
         response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts)}."
     else:
         # Filtrar el menú por distrito y mostrarlo
-        filtered_menu = filter_menu_by_district(menu, district)
+        filtered_menu = filter_menu_by_district(menu, district_input)
         menu_display = format_menu(filtered_menu)
 
         response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
