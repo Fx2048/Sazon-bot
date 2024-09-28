@@ -53,6 +53,13 @@ def format_menu(menu):
         
     return "\n\n".join(formatted_menu)
 
+# Función para clasificar el plato
+def classify_order(prompt, menu):
+    for word in prompt.split(","):
+        if word in menu['Plato'].values:
+            return word  # Retorna el nombre del plato encontrado
+    return None
+
 # Cargar el menú y los distritos
 menu = load_menu("carta.csv")
 districts = load_districts("distritos.csv")
