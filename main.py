@@ -2,6 +2,7 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 from copy import deepcopy
+from fuzzywuzzy import fuzz
 from fuzzywuzzy import process  # Para similitud en nombres de distritos
 import re
 from openai import OpenAI
