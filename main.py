@@ -48,8 +48,28 @@ def verify_district(prompt, districts):
     return None
 
 
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
+import re
+
 # Función mejorada para extraer el pedido y la cantidad usando similitud
 def extract_order_and_quantity(prompt, menu):
+    """
+    Extrae la cantidad y el nombre de cada plato en el pedido del usuario utilizando coincidencias parciales.
+
+    Ejemplos de entrada y salida:
+    Entrada: “Quiero pedir 2 ceviches y 3 causas.”
+    Respuesta: {“Ceviche”: 2, “Causa”: 3}
+
+    Entrada: “Me gustaría 1 lomo saltado y 4 anticuchos.”
+    Respuesta: {“Lomo Saltado”: 1, “Anticucho”: 4}
+
+    Restricciones:
+    - La similitud debe ser mayor al 75% para considerar una coincidencia válida.
+    - Si el prompt es None, retornar un diccionario vacío.
+    - Los nombres de los platos deben coincidir con los del menú proporcionado.
+    """
+
     if not prompt:
         return {}  # Retornar un diccionario vacío si el prompt es None
 
@@ -65,9 +85,23 @@ def extract_order_and_quantity(prompt, menu):
         # Usar fuzzy matching para encontrar la mejor coincidencia del plato en el menú
         best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.partial_ratio)
         if similarity > 75:  # Si la similitud es mayor a un 75%, consideramos que es una coincidencia válida
+            # Se agrega al diccionario con la cantidad
             order_dict[best_match] = int(quantity)
 
     return order_dict
+
+# Ejemplo de prueba de la función con una entrada personalizada
+menu_df = pd.DataFrame({
+    'Plato': ['Ceviche', 'Anticucho', 'Lomo Saltado', 'Causa', 'Sopa Criolla'],
+    'Distrito Disponible': ['Miraflores', 'Miraflores', 'San Isidro', 'San Isidro', 'Miraflores']
+})
+
+# Pruebas con entradas variadas
+print(extract_order_and_quantity("Quiero pedir 2 ceviches y 3 causas.", menu_df))  # {'Ceviche': 2, 'Causa': 3}
+print(extract_order_and_quantity("Me gustaría 1 lomo saltado y 4 anticuchos.", menu_df))  # {'Lomo Saltado': 1, 'Anticucho': 4}
+print(extract_order_and_quantity("1 sopa criolla", menu_df))  # {'Sopa Criolla': 1}
+print(extract_order_and_quantity("3 anticuchos y 2 sopes criollas", menu_df))  # {'Anticucho': 3, 'Sopa Criolla': 2}
+
 
 # Función para verificar los pedidos contra el menú disponible
 def verify_order_with_menu(order_dict, menu):
