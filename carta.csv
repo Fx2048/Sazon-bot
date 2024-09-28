@@ -1,24 +1,23 @@
-Plato,Descripción,Precio
-Arroz con Pollo,Arroz verde con pollo y salsa huancaína,12
-Tallarines Verdes,Pasta con salsa de espinaca y pollo a la parrilla,14
-Lomo Saltado,Salteado de carne de res con cebolla, tomate y papas fritas,18
-Causa Limeña,Puré de papa amarilla con pollo y aguacate,10
-Ají de Gallina,Pollo desmenuzado en salsa de ají amarillo y nueces,15
-Pollo a la Brasa,Pollo marinado y asado, servido con papas y ensalada,16
-Seco de Cordero,Guiso de cordero con cilantro y frijoles,20
-Pachamanca,Carne y verduras cocidas en horno de tierra,25
-Tacu Tacu,Arroz y frijoles refritos, a menudo acompañado de carne,12
-Sopa a la Minuta,Sopa ligera con fideos, carne y verduras,8
-Rocoto Relleno,Rocoto (pimiento) relleno de carne y especias,14
-Chicharrón de Cerdo,Carne de cerdo frita, acompañada de yuca,13
-Sanguchito de Chicharrón,Pan con cerdo frito, cebolla y salsa,7
-Pescado a la Plancha,Pescado fresco a la plancha con guarnición,15
-Bistec a la parrilla,Filete de res a la parrilla, acompañado de ensalada,17
-Tortilla de Huauzontle,Tortilla de huevo con huauzontle, un vegetal local,9
-Ceviche Clásico,Pescado marinado en jugo de limón con cebolla y ají,18
-Sopa Criolla,Sopa con carne, fideos y verduras,10
-Pollo en Salsa de Cacahuate,Pollo cocinado en una salsa de maní,15
-Ensalada de Quinoa,Ensalada de quinoa con verduras frescas y aderezo,12
-Anticuchos,Corazones de res a la parrilla, servidos con salsa,11
-Bebidas Naturales,Jugo de frutas frescas, como maracuyá o mango,5
-
+Plato;Descripción;Precio
+Arroz con Pollo;Arroz verde con pollo y salsa huancaína;12
+Tallarines Verdes;Pasta con salsa de espinaca y pollo a la parrilla;14
+Lomo Saltado;Salteado de carne de res con cebolla, tomate y papas fritas;18
+Causa Limeña;Puré de papa amarilla con pollo y aguacate;10
+Ají de Gallina;Pollo desmenuzado en salsa de ají amarillo y nueces;15
+Pollo a la Brasa;Pollo marinado y asado, servido con papas y ensalada;16
+Seco de Cordero;Guiso de cordero con cilantro y frijoles;20
+Pachamanca;Carne y verduras cocidas en horno de tierra;25
+Tacu Tacu;Arroz y frijoles refritos, a menudo acompañado de carne;12
+Sopa a la Minuta;Sopa ligera con fideos, carne y verduras;8
+Rocoto Relleno;Rocoto (pimiento) relleno de carne y especias;14
+Chicharrón de Cerdo;Carne de cerdo frita, acompañada de yuca;13
+Sanguchito de Chicharrón;Pan con cerdo frito, cebolla y salsa;7
+Pescado a la Plancha;Pescado fresco a la plancha con guarnición;15
+Bistec a la parrilla;Filete de res a la parrilla, acompañado de ensalada;17
+Tortilla de Huauzontle;Tortilla de huevo con huauzontle, un vegetal local;9
+Ceviche Clásico;Pescado marinado en jugo de limón con cebolla y ají;18
+Sopa Criolla;Sopa con carne, fideos y verduras;10
+Pollo en Salsa de Cacahuate;Pollo cocinado en una salsa de maní;15
+Ensalada de Quinoa;Ensalada de quinoa con verduras frescas y aderezo;12
+Anticuchos;Corazones de res a la parrilla, servidos con salsa;11
+Bebidas Naturales;Jugo de frutas frescas, como maracuyá o mango;5
