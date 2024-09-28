@@ -19,12 +19,12 @@ st.markdown(intro)
 
 # Función para cargar el menú desde un archivo CSV
 def load_menu(csv_file):
-    menu = pd.read_csv(csv_file)
+    menu = pd.read_csv(csv_file,, delimiter=';')
     return menu
 
 # Función para cargar los distritos de reparto desde otro CSV
 def load_districts(csv_file):
-    districts = pd.read_csv(csv_file)
+    districts = pd.read_csv(csv_file, delimiter=';')
     return districts['Distrito'].tolist()
 
 # Función para mostrar el menú en un formato más amigable
