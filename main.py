@@ -31,8 +31,10 @@ def load_districts(csv_file):
 
 # Función para filtrar el menú por distrito
 def filter_menu_by_district(menu, district_actual):
-    # Filtramos menú por la columna "Distrito Disponible" y vemos que platos tienen disponibles
-    return menu[menu['Distrito Disponible'].str.contains(district_actual)] 
+    if district_actual is None:
+        return pd.DataFrame()  # Retornar un DataFrame vacío si el distrito es None
+    return menu[menu['Distrito Disponible'].str.contains(district_actual, na=False)]
+
 
 # Función para verificar el distrito
 def verify_district(prompt, districts):
@@ -74,6 +76,8 @@ initial_state = [
         "content": f"👨‍🍳 Antes de comenzar, ¿de dónde nos visitas? Por favor, menciona tu distrito (por ejemplo: Miraflores)."
     },
 ]
+if "current_district" not in st.session_state:
+    st.session_state["current_district"] = None
 
 # Inicializar la conversación si no existe en la sesión
 if "messages" not in st.session_state:
@@ -133,6 +137,9 @@ if user_input := st.chat_input("Escribe aquí..."):
 
 # Función para extraer el pedido y la cantidad usando expresiones regulares
 def extract_order_and_quantity(prompt, menu):
+    if prompt is None:
+        return {}  # Retornar un diccionario vacío si el prompt es None
+    
     # Expresión regular para identificar cantidades (e.g., "2 lomo saltado, 1 ceviche")
     pattern = r"(\d+)\s*([^\d,]+)"
     orders = re.findall(pattern, prompt.lower())  # Encontrar todas las coincidencias
@@ -145,8 +152,9 @@ def extract_order_and_quantity(prompt, menu):
         for menu_item in menu['Plato']:
             if dish_cleaned in menu_item.lower():  # Verificar si el nombre coincide
                 order_dict[menu_item] = int(quantity)  # Añadir al diccionario con la cantidad
-        
+    
     return order_dict
+
 
 # Modificación de la función classify_order para manejar múltiples platos
 def classify_order(prompt, menu):
@@ -167,13 +175,17 @@ def verify_order_with_menu(order_dict, menu):
 
 
 
-# Modificar la función verify_district para encontrar el distrito más similar
+# Modificar la función verify_district para manejar valores None
 def verify_district(prompt, districts):
+    if prompt is None or districts is None:
+        return None  # Retorna None si el prompt o districts son None
+    
     district_list = districts['Distrito'].tolist()
     best_match, similarity = process.extractOne(prompt, district_list)
     if similarity > 75:  # Usar un umbral de similitud (75%)
         return best_match
     return None
+
 
 # Sistema de estados basado en etapas del flujo de conversación
 def update_conversation_state(state, response):
