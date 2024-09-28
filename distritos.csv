@@ -1,4 +1,19 @@
-Distrito
-Miraflores
-San Isidro
-Barranco
+ID,Distrito,Zona
+1,Miraflores,Centro
+2,San Isidro,Centro
+3,La Molina,Este
+4,San Borja,Centro
+5,Santiago de Surco,Sur
+6,Surquillo,Centro
+7,San Juan de Miraflores,Sur
+8,Villa María del Triunfo,Sur
+9,Lima Cercado,Centro
+10,San Luis,Centro
+11,Barranco,Centro
+12,Chorrillos,Sur
+13,San Martín de Porres,Norte
+14,Los Olivos,Norte
+15,Comas,Norte
+16,Puente Piedra,Norte
+17,Ventanilla,Norte
+18,Callao,Centro
