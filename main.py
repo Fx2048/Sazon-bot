@@ -113,7 +113,7 @@ if user_input := st.chat_input("Escribe aquí..."):
             response = f"Gracias por proporcionar tu distrito: **{user_input}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
     else:       
         filtered_menu = filter_menu_by_district(menu, st.session_state["current_district"])
-        order = classify_order(prompt, menu)  # Asegúrate de que `classify_order` considere el menú filtrado
+        order = classify_order(user_input, menu)  # Asegúrate de que `classify_order` considere el menú filtrado
         if not order:
             response = "😊 No has seleccionado ningún plato del menú. Por favor revisa."
         else:
