@@ -4,7 +4,7 @@ from datetime import datetime
 from copy import deepcopy
 from fuzzywuzzy import process  # Para similitud en nombres de distritos
 import re
-import OpenAI
+from openai import OpenAI
 # Cargar el API key de OpenAI desde Streamlit Secrets (si se requiere para otros fines)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
