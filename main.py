@@ -46,24 +46,27 @@ def verify_district(prompt, districts):
         return best_match
     return None
 
-# Función para extraer el pedido y la cantidad usando expresiones regulares
+from fuzzywuzzy import process
+
+# Función mejorada para extraer el pedido y la cantidad usando similitud
 def extract_order_and_quantity(prompt, menu):
     if not prompt:
         return {}  # Retornar un diccionario vacío si el prompt es None
-    
+
     # Expresión regular para identificar cantidades y nombres de platos
     pattern = r"(\d+)\s*([^\d,]+)"  # Buscar 'cantidad + nombre del plato'
     orders = re.findall(pattern, prompt.lower())  # Encontrar todas las coincidencias
-    
+
     order_dict = {}
+    menu_items = menu['Plato'].tolist()  # Convertir los platos del menú en una lista
+
     for quantity, dish in orders:
-        # Limpiar los nombres de los platos para evitar errores de mayúsculas/minúsculas
         dish_cleaned = dish.strip()
-        # Buscar si el plato está en el menú usando coincidencia parcial
-        for menu_item in menu['Plato']:
-            if dish_cleaned in menu_item.lower():  # Verificar si el nombre coincide
-                order_dict[menu_item] = int(quantity)  # Añadir al diccionario con la cantidad
-    
+        # Usar fuzzy matching para encontrar la mejor coincidencia del plato en el menú
+        best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.partial_ratio)
+        if similarity > 75:  # Si la similitud es mayor a un 75%, consideramos que es una coincidencia válida
+            order_dict[best_match] = int(quantity)
+
     return order_dict
 
 # Función para verificar los pedidos contra el menú disponible
