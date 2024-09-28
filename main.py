@@ -32,6 +32,13 @@ def filter_menu_by_district(menu, district):
     # Suponiendo que el menú tenga una columna "Distrito" para filtrar
     return menu[menu['Distrito'] == district]  # Modificar según tu estructura de menú
 
+# Función para verificar el distrito
+def verify_district(prompt, districts):
+    for word in districts:  # Iterar sobre la lista de distritos
+        if word in prompt:  # Comprobar si el distrito está en el texto del prompt
+            return True  # Retorna el distrito encontrado
+    return None
+
 # Función para mostrar el menú en un formato más amigable
 def format_menu(menu):
     if menu.empty:
