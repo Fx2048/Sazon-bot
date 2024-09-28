@@ -25,7 +25,7 @@ def load_menu(csv_file):
 # Función para cargar los distritos de reparto desde otro CSV
 def load_districts(csv_file):
     districts = pd.read_csv(csv_file)
-    return districts['Distrito'].tolist()
+    return districts
 
 # Función para filtrar el menú por distrito
 def filter_menu_by_district(menu, district):
@@ -36,6 +36,7 @@ def filter_menu_by_district(menu, district):
 
 # Función para verificar el distrito
 def verify_district(prompt, districts):
+    districts=districts['Distrito'].tolist()
     for word in districts:  # Iterar sobre la lista de distritos
         if word in prompt:  # Comprobar si el distrito está en el texto del prompt
             return True  # Retorna el distrito encontrado
