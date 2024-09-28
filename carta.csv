@@ -1,23 +1,23 @@
 Plato;Descripción;Precio;Distrito Disponible
-Arroz con Pollo;Arroz verde con pollo y salsa huancaína;12;1,2
-Tallarines Verdes;Pasta con salsa de espinaca y pollo a la parrilla;14;3,4
-Lomo Saltado;Salteado de carne de res con cebolla, tomate y papas fritas;18;5,6,7
-Causa Limeña;Puré de papa amarilla con pollo y aguacate;10;8,9
-Ají de Gallina;Pollo desmenuzado en salsa de ají amarillo y nueces;15;1,10
-Pollo a la Brasa;Pollo marinado y asado, servido con papas y ensalada;16;2,11
-Seco de Cordero;Guiso de cordero con cilantro y frijoles;20;3,12
-Pachamanca;Carne y verduras cocidas en horno de tierra;25;4,5,13
-Tacu Tacu;Arroz y frijoles refritos, a menudo acompañado de carne;12;6,14
-Sopa a la Minuta;Sopa ligera con fideos, carne y verduras;8;7,15
-Rocoto Relleno;Rocoto (pimiento) relleno de carne y especias;14;8,9
-Chicharrón de Cerdo;Carne de cerdo frita, acompañada de yuca;13;10,11
-Sanguchito de Chicharrón;Pan con cerdo frito, cebolla y salsa;7;12,1
-Pescado a la Plancha;Pescado fresco a la plancha con guarnición;15;2,3,4
-Bistec a la parrilla;Filete de res a la parrilla, acompañado de ensalada;17;5,6
-Tortilla de Huauzontle;Tortilla de huevo con huauzontle, un vegetal local;9;7,8
-Ceviche Clásico;Pescado marinado en jugo de limón con cebolla y ají;18;9,10,11
-Sopa Criolla;Sopa con carne, fideos y verduras;10;12,13
-Pollo en Salsa de Cacahuate;Pollo cocinado en una salsa de maní;15;14,15
-Ensalada de Quinoa;Ensalada de quinoa con verduras frescas y aderezo;12;16,17,18
-Anticuchos;Corazones de res a la parrilla, servidos con salsa;11;1,2
-Bebidas Naturales;Jugo de frutas frescas, como maracuyá o mango;5;3,4,5
+Arroz con Pollo;Arroz verde con pollo y salsa huancaína;12;Santiago de Surco, Ventanilla, Puente Piedra
+Tallarines Verdes;Pasta con salsa de espinaca y pollo a la parrilla;14;Surquillo, San Isidro, Comas
+Lomo Saltado;Salteado de carne de res con cebolla, tomate y papas fritas;18;San Isidro, Puente Piedra
+Causa Limeña;Puré de papa amarilla con pollo y aguacate;10;Comas, Santiago de Surco, Puente Piedra
+Ají de Gallina;Pollo desmenuzado en salsa de ají amarillo y nueces;15;San Juan de Miraflores, Comas
+Pollo a la Brasa;Pollo marinado y asado, servido con papas y ensalada;16;Villa María del Triunfo, Ventanilla
+Seco de Cordero;Guiso de cordero con cilantro y frijoles;20;San Luis, Villa María del Triunfo, Los Olivos
+Pachamanca;Carne y verduras cocidas en horno de tierra;25;Villa María del Triunfo, Puente Piedra
+Tacu Tacu;Arroz y frijoles refritos, a menudo acompañado de carne;12;San Juan de Miraflores, San Luis, San Borja
+Sopa a la Minuta;Sopa ligera con fideos, carne y verduras;8;Chorrillos, San Juan de Miraflores, Ventanilla
+Rocoto Relleno;Rocoto (pimiento) relleno de carne y especias;14;Lima Cercado, Callao
+Chicharrón de Cerdo;Carne de cerdo frita, acompañada de yuca;13;San Martín de Porres, San Borja
+Sanguchito de Chicharrón;Pan con cerdo frito, cebolla y salsa;7;Villa María del Triunfo, Puente Piedra
+Pescado a la Plancha;Pescado fresco a la plancha con guarnición;15;Puente Piedra, Chorrillos
+Bistec a la parrilla;Filete de res a la parrilla, acompañado de ensalada;17;Villa María del Triunfo, San Borja
+Tortilla de Huauzontle;Tortilla de huevo con huauzontle, un vegetal local;9;San Isidro, Puente Piedra, Callao
+Ceviche Clásico;Pescado marinado en jugo de limón con cebolla y ají;18;Surquillo, San Martín de Porres, San Borja
+Sopa Criolla;Sopa con carne, fideos y verduras;10;Ventanilla, Miraflores, Chorrillos
+Pollo en Salsa de Cacahuate;Pollo cocinado en una salsa de maní;15;Comas, Surquillo
+Ensalada de Quinoa;Ensalada de quinoa con verduras frescas y aderezo;12;Surquillo, Los Olivos, Villa María del Triunfo
+Anticuchos;Corazones de res a la parrilla, servidos con salsa;11;San Juan de Miraflores, Callao, Santiago de Surco
+Bebidas Naturales;Jugo de frutas frescas, como maracuyá o mango;5;San Martín de Porres, San Juan de Miraflores
