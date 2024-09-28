@@ -107,7 +107,7 @@ if user_input := st.chat_input("Escribe aquí..."):
             st.session_state["district_selected"] = True
             st.session_state["current_district"] = user_input
             # Filtrar el menú por distrito y mostrarlo
-            filtered_menu = filter_menu_by_district(menu, user_input)
+            filtered_menu = filter_menu_by_district(menu, st.session_state["current_district"])
             menu_display = format_menu(filtered_menu)
 
             response = f"Gracias por proporcionar tu distrito: **{user_input}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
