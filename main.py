@@ -93,33 +93,25 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"], avatar="🍲" if message["role"] == "assistant" else "👤"):
         st.markdown(message["content"])
 
-if not st.session_state["district_selected"]:
-    if district_input := st.chat_input("¿De dónde nos visitas?"):
-        with st.chat_message("user", avatar="👤"):
-            st.markdown(district_input)
+# Entrada del usuario
+if user_input := st.chat_input("Escribe aquí..."):
+    with st.chat_message("user", avatar="👤"):
+        st.markdown(user_input)
         
+    if not st.session_state["district_selected"]:
         # Verificar el distrito
-        district = verify_district(district_input, districts)
+        district = verify_district(user_input, districts)
         if not district:
             response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts)}."
         else:
             st.session_state["district_selected"] = True
             st.session_state["current_district"] = district
             # Filtrar el menú por distrito y mostrarlo
-            filtered_menu = filter_menu_by_district(menu, district_input)
+            filtered_menu = filter_menu_by_district(menu, user_input)
             menu_display = format_menu(filtered_menu)
 
-            response = f"Gracias por proporcionar tu distrito: **{district_input}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
-        
-        # Mostrar la respuesta del asistente
-        with st.chat_message("assistant", avatar="🍲"):
-            st.markdown(response)
-else:
-    # Entrada del usuario para el pedido
-    if prompt := st.chat_input("¿Qué te gustaría pedir?"):
-        with st.chat_message("user", avatar="👤"):
-            st.markdown(prompt)
-        
+            response = f"Gracias por proporcionar tu distrito: **{user_input}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
+    else:       
         filtered_menu = filter_menu_by_district(menu, st.session_state["current_district"])
         order = classify_order(prompt, menu)  # Asegúrate de que `classify_order` considere el menú filtrado
         if not order:
@@ -128,6 +120,10 @@ else:
             response = f"Tu pedido ha sido registrado: **{order}**. ¡Gracias!"
             st.session_state["last_order"] = order
     
-        # Mostrar la respuesta del asistente
-        with st.chat_message("assistant", avatar="🍲"):
-            st.markdown(response)
+    # Mostrar la respuesta del asistente
+    with st.chat_message("assistant", avatar="🍲"):
+        st.markdown(response)
+        
+     # Guardar el mensaje en la sesión
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    st.session_state.messages.append({"role": "assistant", "content": response})
