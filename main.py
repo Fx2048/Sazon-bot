@@ -56,7 +56,7 @@ def improved_extract_order_and_quantity(prompt, menu):
         return {}
 
     # Definir el patrón para capturar las cantidades y nombres de platos en la entrada del usuario
-    pattern = r"(\d+|uno|dos|tres|cuatro|cinco)?\s*([^\d,]+)"
+    pattern = r"(\d+|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez)?\s*([^\d,]+)"
     orders = re.findall(pattern, prompt.lower())
 
     order_dict = {}
@@ -70,72 +70,25 @@ def improved_extract_order_and_quantity(prompt, menu):
         'cuatro': 4,
         'cinco': 5,
         'seis': 6,
-        'seis': 6,
         'siete': 7,
         'ocho': 8,
         'nueve': 9,
         'diez': 10,
-        'once': 11,
-        'doce': 12,
         'media docena': 6,
-        'media docena': 6,
-        'media docena de huevos': 6,
         'docena': 12,
-        'docena de huevos': 12,
         'cien': 100,
-        'doscientos': 200,
-        'trescientos': 300,
-        'cuatrocientos': 400,
-        'quinientos': 500,
-        'seiscientos': 600,
-        'setecientos': 700,
-        'ochocientos': 800,
-        'novecientos': 900,
         'mil': 1000,
-        'mil uno': 1001,
-        'mil dos': 1002,
-        'mil tres': 1003,
         # Variaciones con errores ortográficos
         'un': 1,
-        'uno ': 1,
         'uuno': 1,
-        'dos ': 2,
-        'tres.': 3,
-        'cuatro ': 4,
+        '5.': 5,
+        '2 ': 2,
         'cinco!': 5,
-        'siex': 6,
-        'siete ': 7,
         'och0': 8,
-        'nueve!': 9,
         'diez ': 10,
         'media': 6,  # Omitiendo "docena"
-        'docena ': 12,
         'decena': 10,
         'doscenas': 24,  # Asumiendo que se refiere a 2 docenas
-        'media docena': 6,
-        'media': 6,  # Omitiendo "docena"
-        '5.': 5,     # Puntuación al final
-        '2 ': 2,
-        'tres': 3,
-        'cuatro.': 4,
-        'cinco': 5,
-        'seis!': 6,
-        'siete,': 7,
-        'ocho.': 8,
-        'nueve ': 9,
-        'diez': 10,
-        'once ': 11,
-        'doce.': 12,
-        'docena': 12,
-        'cien ': 100,
-        'ciento': 100,
-        'mil ': 1000,
-        'mil uno': 1001,
-        'mil y uno': 1001,
-        'mil dos': 1002,
-        'mil tres': 1003,
-        'mil cuatro': 1004,
-        'mil cinco': 1005
     }
 
     for quantity, dish in orders:
@@ -167,99 +120,30 @@ def normalize_dish_name(dish_name):
     dish_name = dish_name.lower()
 
     # Diccionario con las variaciones de nombres de platos
-dish_variations = {
-        "Arroz con Pollo": [
-            "arroz con pollo", "arroz cn pollo", "arroz conpllo", "Arroz Con Pollo",
-            "ARROZ CON POLLO", "arr0z con pollo", "arroz c/ pollo", "arroz pollo",
-            "arrozconpollo", "arroz, pollo"
-        ],
-        "Tallarines Verdes": [
-            "tallarines verdes", "talarines verdes", "tallarinesv verdes", "Tallarines Verdes",
-            "TALLARINES VERDES", "tallarines vrdes", "tallarines vrd", "tallarine$ verdes","tallarines",
-        ],
-        "Lomo Saltado": [
-            "lomo saltado", "lomo$altado", "lomo saltado", "Lomo Saltado",
-            "LOMO SALTADO", "lomo sltado", "lomo s/tado", "lomosaltado","lomo",
-        ],
-        "Causa Limeña": [
-            "causa limena", "causalimeña", "Causa Limeña", "CAUSA LIMEÑA",
-            "causa limena", "causa limeña", "cau$a limeña","causa",
-        ],
-        "Ají de Gallina": [
-            "aji de gallina", "aji de gallina", "aji gallina", "ají de gallina",
-            "AJI DE GALLINA", "ajies de gallina", "ajis de gallina", "aji de gallin","ajies","ajíes",
-            "ajis", "aji's", "ajíé de gallina"
-        ],
-        "Pollo a la Brasa": [
-            "pollo a la brasa", "polloala brasa", "pollo a la brasa", "Pollo a la Brasa",
-            "POLLO A LA BRASA", "pollo brasa", "pollo brasa", "p0llo a la brasa","brasa",
-        ],
-        "Seco de Cordero": [
-            "seco de cordero", "sec0 de cordero", "Seco de Cordero", "SECO DE CORDERO",
-            "seco cordero", "sec0 cordero","seco","SECO","Seco",
-        ],
-        "Pachamanca": [
-            "pachamanca", "pachamanc", "pachamanca", "Pachamanca",
-            "PACHAMANKA", "pacha manka", "pacha mnka","pacha manca","Pacha manca",
-        ],
-        "Tacu Tacu": [
-            "tacu tacu", "tacutacu", "tacu-tacu", "Tacu Tacu",
-            "TACU TACU", "tacutac", "tacutac$"
-        ],
-        "Sopa a la Minuta": [
-            "sopa a la minuta", "sopaala minuta", "sopa a la mnuta", "Sopa a la Minuta",
-            "SOPA A LA MINUTA", "sopa min", "sopa mn"
-        ],
-        "Rocoto Relleno": [
-            "rocoto relleno", "rocoto rellen", "rocoto relleno", "Rocoto Relleno",
-            "ROCOTO RELLENO", "rocotorellen", "rocoto rllen"
-        ],
-        "Chicharrón de Cerdo": [
-            "chicharron de cerdo", "chicharrones cerdo", "chicharrones", "Chicharrón de Cerdo",
-            "CHICHARRÓN DE CERDO", "chicharron", "chicharron cerdo", "chicharron d cerdo"
-        ],
-        "Sanguchito de Chicharrón": [
-            "sanguchito de chicharron", "sanguchito chicharrón", "sanguchitos chicharrón",
-            "Sanguchito de Chicharrón", "SANGUCHITO DE CHICHARRÓN", "sanguchito", "sanguchitodechicharrón"
-        ],
-        "Pescado a la Plancha": [
-            "pescado a la plancha", "pesacado a la plancha", "pescado plancha",
-            "Pescado a la Plancha", "PESCADO A LA PLANCHA", "pesca d a la plancha"
-        ],
-        "Bistec a la parrilla": [
-            "bistec a la parrilla", "bistec la parrilla", "bistec parrilla",
-            "Bistec a la Parrilla", "BISTEC A LA PARRILLA", "bistec a la prrilla", "bistec parrila"
-        ],
-        "Tortilla de Huauzontle": [
-            "tortilla de huauzontle", "tortilla huauzontle", "tortilla de huauzonlte",
-            "Tortilla de Huauzontle", "TORTILLA DE HUAUZONTLE", "tortila de huauzontle"
-        ],
-        "Ceviche Clásico": [
-            "ceviche clasico", "ceviche clasico", "cevichelásico", "Ceviche Clásico",
-            "CEVICHE CLÁSICO", "cevi chclásico", "ceviche clsc"
-        ],
-        "Sopa Criolla": [
-            "sopa criolla", "sopacriolla", "sopa criolla", "Sopa Criolla",
-            "SOPA CRIOLLA", "sopa crll", "sopa c.",
-        ],
-        "Pollo en Salsa de Cacahuate": [
-            "pollo en salsa de cacahuate", "pollo en salsa cacahuate", "pollo s/cacahuate",
-            "Pollo en Salsa de Cacahuate", "POLLO EN SALSA DE CACAHUATE", "polloen salsacahuate","salsa de cacahuate",
-        ],
-        "Ensalada de Quinoa": [
-            "ensalada de quinoa", "ensalada quinoa", "ensalqdadequinoa", "Ensalada de Quinoa",
-            "ENSALADA DE QUINOA", "ensalada d quinoa", "ensaladas quinoa","ensalada", "quinoa",
-        ],
-        "Anticuchos": [
-            "anticuchos", "anticucho", "antichucos", "antochucos", "Anticuchos",
-            "ANTICUCHOS", "anticuhos", "anticuchos$"
-        ],
-        "Bebidas Naturales": [
-            "bebidas naturales", "bebida$ naturales", "bebida natural", "Bebidas Naturales",
-            "BEBIDAS NATURALES", "bebidn naturales", "beidas natrales", "bebidas",
-        ]
+    dish_variations = {
+        "Arroz con Pollo": ["arroz con pollo", "arroz cn pollo", "arroz conpllo"],
+        "Tallarines Verdes": ["tallarines verdes", "talarines verdes"],
+        "Lomo Saltado": ["lomo saltado", "lomo$altado"],
+        "Causa Limeña": ["causa limena", "causalimeña"],
+        "Ají de Gallina": ["aji de gallina", "aji gallina", "ají de gallina"],
+        "Pollo a la Brasa": ["pollo a la brasa", "polloala brasa"],
+        "Seco de Cordero": ["seco de cordero", "sec0 de cordero"],
+        "Pachamanca": ["pachamanca", "pachamanc"],
+        "Tacu Tacu": ["tacu tacu", "tacutacu", "tacu-tacu"],
+        "Sopa a la Minuta": ["sopa a la minuta", "sopaala minuta"],
+        "Rocoto Relleno": ["rocoto relleno", "rocoto rellen"],
+        "Chicharrón de Cerdo": ["chicharron de cerdo", "chicharrones cerdo"],
+        "Sanguchito de Chicharrón": ["sanguchito de chicharron", "sanguchito chicharrón"],
+        "Pescado a la Plancha": ["pescado a la plancha", "pesacado a la plancha"],
+        "Bistec a la parrilla": ["bistec a la parrilla", "bistec la parrilla"],
+        "Tortilla de Huauzontle": ["tortilla de huauzontle", "tortilla huauzontle"],
+        "Ceviche Clásico": ["ceviche clasico", "ceviche clasico"],
+        "Sopa Criolla": ["sopa criolla", "sopacriolla"],
+        "Pollo en Salsa de Cacahuate": ["pollo en salsa de cacahuate", "pollo en salsa cacahuate"],
+        "Ensalada de Quinoa": ["ensalada de quinoa", "ensalada quinoa"],
+        "Anticuchos": ["anticuchos", "anticucho"],
+        "Bebidas Naturales": ["bebidas naturales", "bebida$ naturales"],
     }
-
 
     for standard_name, variations in dish_variations.items():
         if any(variation in dish_name for variation in variations):
@@ -319,41 +203,47 @@ if clear_button:
 for message in st.session_state.messages:
     if message["role"] == "system":
         continue
-    with st.chat_message(message["role"], avatar="🍲" if message["role"] == "assistant" else "👤"):
+    with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Entrada del usuario
-if user_input := st.chat_input("Escribe aquí..."):
-    with st.chat_message("user", avatar="👤"):
-        st.markdown(user_input)
+# Procesar la entrada del usuario
+user_input = st.chat_input("Escribe tu mensaje...")
 
-    if not st.session_state["district_selected"]:
-        district = verify_district(user_input, districts)
-        if not district:
-            response = f"Lo siento, pero no entregamos en ese distrito. Distritos disponibles: {', '.join(districts['Distrito'].tolist())}."
-        else:
-            st.session_state["district_selected"] = True
-            st.session_state["current_district"] = district
+if user_input:
+    st.session_state.messages.append({"role": "user", "content": user_input})
+    user_input_cleaned = user_input.lower().strip()
+
+    if not st.session_state.district_selected:
+        # Verificar el distrito
+        district = verify_district(user_input_cleaned, districts)
+        if district:
+            st.session_state.district_selected = True
+            st.session_state.current_district = district
+            st.session_state.messages.append({"role": "assistant", "content": f"✅ Distrito verificado: {district}."})
+            # Filtrar el menú por el distrito seleccionado
             filtered_menu = filter_menu_by_district(menu, district)
             menu_display = format_menu(filtered_menu)
-
-            response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?** Ejm: 2 Pescado a la Plancha."
-    else:
-        order_dict = improved_extract_order_and_quantity(user_input, menu)
-        if not order_dict:
-            response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato, ejm: 2 Pescado a la Plancha."
+            st.session_state.messages.append({"role": "assistant", "content": menu_display})
         else:
-            available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
-            if unavailable_orders:
-                response = f"Lo siento, los siguientes platos no están disponibles: {', '.join(unavailable_orders)}."
-            else:
-                response = f"Tu pedido ha sido registrado: {', '.join([f'{qty} x {dish}' for dish, qty in available_orders.items()])}. ¡Gracias!"
+            st.session_state.messages.append({"role": "assistant", "content": "❌ No reconozco ese distrito. Por favor, menciona tu distrito nuevamente."})
+    else:
+        # Procesar el pedido
+        order_dict = improved_extract_order_and_quantity(user_input_cleaned, menu)
+        available_orders, unavailable_orders = verify_order_with_menu(order_dict, filter_menu_by_district(menu, st.session_state.current_district))
 
-    # Mostrar la respuesta del asistente
-    with st.chat_message("assistant", avatar="🍲"):
-        st.markdown(response)
+        # Responder al usuario sobre los pedidos disponibles y no disponibles
+        if available_orders:
+            available_orders_msg = "Tus pedidos disponibles son:"
+            for dish, quantity in available_orders.items():
+                available_orders_msg += f"\n- {quantity}x {dish}"
+            st.session_state.messages.append({"role": "assistant", "content": available_orders_msg})
+        if unavailable_orders:
+            unavailable_orders_msg = "Los siguientes platos no están disponibles:"
+            for dish in unavailable_orders:
+                unavailable_orders_msg += f"\n- {dish}"
+            st.session_state.messages.append({"role": "assistant", "content": unavailable_orders_msg})
 
-    st.session_state.messages.append({"role": "user", "content": user_input})
-    st.session_state.messages.append({"role": "assistant", "content": response})
+        if not available_orders and not unavailable_orders:
+            st.session_state.messages.append({"role": "assistant", "content": "❌ No encontré nada en tu pedido."})
 
 
