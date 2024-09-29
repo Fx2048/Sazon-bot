@@ -120,30 +120,100 @@ def normalize_dish_name(dish_name):
     dish_name = dish_name.lower()
 
     # Diccionario con las variaciones de nombres de platos
+# Definir un diccionario para manejar las variaciones de nombres de platos
     dish_variations = {
-        "Arroz con Pollo": ["arroz con pollo", "arroz cn pollo", "arroz conpllo"],
-        "Tallarines Verdes": ["tallarines verdes", "talarines verdes"],
-        "Lomo Saltado": ["lomo saltado", "lomo$altado"],
-        "Causa Limeña": ["causa limena", "causalimeña"],
-        "Ají de Gallina": ["aji de gallina", "aji gallina", "ají de gallina"],
-        "Pollo a la Brasa": ["pollo a la brasa", "polloala brasa"],
-        "Seco de Cordero": ["seco de cordero", "sec0 de cordero"],
-        "Pachamanca": ["pachamanca", "pachamanc"],
-        "Tacu Tacu": ["tacu tacu", "tacutacu", "tacu-tacu"],
-        "Sopa a la Minuta": ["sopa a la minuta", "sopaala minuta"],
-        "Rocoto Relleno": ["rocoto relleno", "rocoto rellen"],
-        "Chicharrón de Cerdo": ["chicharron de cerdo", "chicharrones cerdo"],
-        "Sanguchito de Chicharrón": ["sanguchito de chicharron", "sanguchito chicharrón"],
-        "Pescado a la Plancha": ["pescado a la plancha", "pesacado a la plancha"],
-        "Bistec a la parrilla": ["bistec a la parrilla", "bistec la parrilla"],
-        "Tortilla de Huauzontle": ["tortilla de huauzontle", "tortilla huauzontle"],
-        "Ceviche Clásico": ["ceviche clasico", "ceviche clasico"],
-        "Sopa Criolla": ["sopa criolla", "sopacriolla"],
-        "Pollo en Salsa de Cacahuate": ["pollo en salsa de cacahuate", "pollo en salsa cacahuate"],
-        "Ensalada de Quinoa": ["ensalada de quinoa", "ensalada quinoa"],
-        "Anticuchos": ["anticuchos", "anticucho"],
-        "Bebidas Naturales": ["bebidas naturales", "bebida$ naturales"],
+        "Arroz con Pollo": [
+            "arroz con pollo", "arroz cn pollo", "arroz conpllo", "Arroz Con Pollo",
+            "ARROZ CON POLLO", "arr0z con pollo", "arroz c/ pollo", "arroz pollo",
+            "arrozconpollo", "arroz, pollo"
+        ],
+        "Tallarines Verdes": [
+            "tallarines verdes", "talarines verdes", "tallarinesv verdes", "Tallarines Verdes",
+            "TALLARINES VERDES", "tallarines vrdes", "tallarines vrd", "tallarine$ verdes","tallarines",
+        ],
+        "Lomo Saltado": [
+            "lomo saltado", "lomo$altado", "lomo saltado", "Lomo Saltado",
+            "LOMO SALTADO", "lomo sltado", "lomo s/tado", "lomosaltado","lomo",
+        ],
+        "Causa Limeña": [
+            "causa limena", "causalimeña", "Causa Limeña", "CAUSA LIMEÑA",
+            "causa limena", "causa limeña", "cau$a limeña","causa",
+        ],
+        "Ají de Gallina": [
+            "aji de gallina", "aji de gallina", "aji gallina", "ají de gallina",
+            "AJI DE GALLINA", "ajies de gallina", "ajis de gallina", "aji de gallin","ajies","ajíes",
+            "ajis", "aji's", "ajíé de gallina"
+        ],
+        "Pollo a la Brasa": [
+            "pollo a la brasa", "polloala brasa", "pollo a la brasa", "Pollo a la Brasa",
+            "POLLO A LA BRASA", "pollo brasa", "pollo brasa", "p0llo a la brasa","brasa",
+        ],
+        "Seco de Cordero": [
+            "seco de cordero", "sec0 de cordero", "Seco de Cordero", "SECO DE CORDERO",
+            "seco cordero", "sec0 cordero","seco","SECO","Seco",
+        ],
+        "Pachamanca": [
+            "pachamanca", "pachamanc", "pachamanca", "Pachamanca",
+            "PACHAMANKA", "pacha manka", "pacha mnka","pacha manca","Pacha manca",
+        ],
+        "Tacu Tacu": [
+            "tacu tacu", "tacutacu", "tacu-tacu", "Tacu Tacu",
+            "TACU TACU", "tacutac", "tacutac$"
+        ],
+        "Sopa a la Minuta": [
+            "sopa a la minuta", "sopaala minuta", "sopa a la mnuta", "Sopa a la Minuta",
+            "SOPA A LA MINUTA", "sopa min", "sopa mn","sopa","sopas",
+        ],
+        "Rocoto Relleno": [
+            "rocoto relleno", "rocoto rellen", "rocoto relleno", "Rocoto Relleno",
+            "ROCOTO RELLENO", "rocotorellen", "rocoto rllen"
+        ],
+        "Chicharrón de Cerdo": [
+            "chicharron de cerdo", "chicharrones cerdo", "chicharrones", "Chicharrón de Cerdo",
+            "CHICHARRÓN DE CERDO", "chicharron", "chicharron cerdo", "chicharron d cerdo"
+        ],
+        "Sanguchito de Chicharrón": [
+            "sanguchito de chicharron", "sanguchito chicharrón", "sanguchitos chicharrón",
+            "Sanguchito de Chicharrón", "SANGUCHITO DE CHICHARRÓN", "sanguchito", "sanguchitodechicharrón"
+        ],
+        "Pescado a la Plancha": [
+            "pescado a la plancha", "pesacado a la plancha", "pescado plancha",
+            "Pescado a la Plancha", "PESCADO A LA PLANCHA", "pesca d a la plancha"
+        ],
+        "Bistec a la parrilla": [
+            "bistec a la parrilla", "bistec la parrilla", "bistec parrilla",
+            "Bistec a la Parrilla", "BISTEC A LA PARRILLA", "bistec a la prrilla", "bistec parrila"
+        ],
+        "Tortilla de Huauzontle": [
+            "tortilla de huauzontle", "tortilla huauzontle", "tortilla de huauzonlte",
+            "Tortilla de Huauzontle", "TORTILLA DE HUAUZONTLE", "tortila de huauzontle"
+        ],
+        "Ceviche Clásico": [
+            "ceviche clasico", "ceviche clasico", "cevichelásico", "Ceviche Clásico",
+            "CEVICHE CLÁSICO", "cevi chclásico", "ceviche clsc"
+        ],
+        "Sopa Criolla": [
+            "sopa criolla", "sopacriolla", "sopa criolla", "Sopa Criolla",
+            "SOPA CRIOLLA", "sopa crll", "sopa c.",
+        ],
+        "Pollo en Salsa de Cacahuate": [
+            "pollo en salsa de cacahuate", "pollo en salsa cacahuate", "pollo s/cacahuate",
+            "Pollo en Salsa de Cacahuate", "POLLO EN SALSA DE CACAHUATE", "polloen salsacahuate","salsa de cacahuate",
+        ],
+        "Ensalada de Quinoa": [
+            "ensalada de quinoa", "ensalada quinoa", "ensalqdadequinoa", "Ensalada de Quinoa",
+            "ENSALADA DE QUINOA", "ensalada d quinoa", "ensaladas quinoa","ensalada", "quinoa",
+        ],
+        "Anticuchos": [
+            "anticuchos", "anticucho", "antichucos", "antochucos", "Anticuchos",
+            "ANTICUCHOS", "anticuhos", "anticuchos$"
+        ],
+        "Bebidas Naturales": [
+            "bebidas naturales", "bebida$ naturales", "bebida natural", "Bebidas Naturales",
+            "BEBIDAS NATURALES", "bebidn naturales", "beidas natrales", "bebidas",
+        ]
     }
+
 
     for standard_name, variations in dish_variations.items():
         if any(variation in dish_name for variation in variations):
