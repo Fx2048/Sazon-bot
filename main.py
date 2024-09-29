@@ -162,12 +162,12 @@ if user_input := st.chat_input("Escribe aquí..."):
             filtered_menu = filter_menu_by_district(menu, district)
             menu_display = format_menu(filtered_menu)
 
-            response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**"
+            response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**.Ejm: 2 Pescado a la Plancha"
     else:
         # Procesar el pedido con cantidades específicas
         order_dict = extract_order_and_quantity(user_input, menu)
         if not order_dict:
-            response = "😊 No has seleccionado ningún plato del menú. Por favor revisa."
+            response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato,ejm: 2 Pescado a la Plancha"
         else:
             available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
             if unavailable_orders:
