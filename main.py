@@ -173,7 +173,7 @@ def normalize_dish_name(dish_name):
     "Arroz con Pollo": [
         "arroz con pollo", "arroz cn pollo", "arroz conpllo", "Arroz Con Pollo",
         "ARROZ CON POLLO", "arr0z con pollo", "arroz c/ pollo", "arroz pollo",
-        "arrozconpollo", "arroz, pollo"
+        "arrozconpollo", "arroz",
     ],
     "Tallarines Verdes": [
         "tallarines verdes", "talarines verdes", "tallarinesv verdes", "Tallarines Verdes",
@@ -181,11 +181,11 @@ def normalize_dish_name(dish_name):
     ],
     "Lomo Saltado": [
         "lomo saltado", "lomo$altado", "lomo saltado", "Lomo Saltado",
-        "LOMO SALTADO", "lomo sltado", "lomo s/tado", "lomosaltado","lomo",
+        "LOMO SALTADO", "lomo sltado", "lomo s/tado", "lomosaltado","lomo","lomos"
     ],
     "Causa Limeña": [
         "causa limena", "causalimeña", "Causa Limeña", "CAUSA LIMEÑA",
-        "causa limena", "causa limeña", "cau$a limeña","causa",
+        "causa limena", "causa limeña", "cau$a limeña","causa","causas"
     ],
     "Ají de Gallina": [
         "aji de gallina", "aji de gallina", "aji gallina", "ají de gallina",
@@ -198,7 +198,7 @@ def normalize_dish_name(dish_name):
     ],
     "Seco de Cordero": [
         "seco de cordero", "sec0 de cordero", "Seco de Cordero", "SECO DE CORDERO",
-        "seco cordero", "sec0 cordero","seco","SECO","Seco",
+        "seco cordero", "sec0 cordero","seco","SECO","Seco","secos",
     ],
     "Pachamanca": [
         "pachamanca", "pachamanc", "pachamanca", "Pachamanca",
@@ -242,7 +242,7 @@ def normalize_dish_name(dish_name):
     ],
     "Sopa Criolla": [
         "sopa criolla", "sopacriolla", "sopa criolla", "Sopa Criolla",
-        "SOPA CRIOLLA", "sopa crll", "sopa c.",
+        "SOPA CRIOLLA", "sopa crll", "sopa c."
     ],
     "Pollo en Salsa de Cacahuate": [
         "pollo en salsa de cacahuate", "pollo en salsa cacahuate", "pollo s/cacahuate",
