@@ -35,7 +35,7 @@ def load_districts(csv_file):
 def verify_district(prompt, districts):
     district_list = districts['Distrito'].tolist()
     best_match, similarity = process.extractOne(prompt, district_list)
-    if similarity > 75:
+    if similarity > 65:
         return best_match
     return None
 
@@ -268,6 +268,47 @@ def normalize_dish_name(dish_name):
             return standard_name
 
     return dish_name
+district_variations = {
+    "Miraflores": ["miraflores", "miraflr", "mira flores", "miraflores", "mflrs", "miraflo", "miraflrs", "miraflorez"],
+    "San Isidro": ["san isidro", "sn isidro", "san i$idro", "s anisidro", "isidro", "s. isidro", "san isid", "san isidro", "snisidro"],
+    "La Molina": ["la molina", "lamolina", "la molna", "la molin", "la molin@", "la molin4", "lamolna", "la molinaz"],
+    "San Borja": ["san borja", "sn borja", "san borj@", "san borj4", "s. borja", "san borj", "san borj4", "s4n borja"],
+    "Santiago de Surco": ["santiago de surco", "stgo de surco", "sant de surco", "santiago surco", "sant surco", "santiago d surco", "sant d surco"],
+    "Surquillo": ["surquillo", "surquill@", "surquill0", "surquill", "surquillo", "surquill0", "surquilloz"],
+    "San Juan de Miraflores": ["san juan de miraflores", "sn juan de miraflores", "san juan miraflores", "s juan de miraflores", "san juan d miraflores", "s juan miraflores"],
+    "Villa María del Triunfo": ["villa maría del triunfo", "villa maria del triunfo", "v. maria del triunfo", "villa m del triunfo", "villa maria triunfo", "v maria del triunfo"],
+    "Lima Cercado": ["lima cercado", "lima cercad@", "lima cercad0", "lima cercad", "lima cercad0", "lima cercadaz"],
+    "San Luis": ["san luis", "sn luis", "san luis", "s. luis", "san luis", "san luis", "s4n luis"],
+    "Barranco": ["barranco", "barranc@", "barranc0", "barranc", "barranc0", "barrancoz"],
+    "Chorrillos": ["chorrillos", "chorrill@", "chorrill0", "chorrill", "chorrill0", "chorrilloz"],
+    "San Martín de Porres": ["san martín de porres", "san martin de porres", "sn martin de porres", "san martin porres", "s. martin de porres", "san martin d porres"],
+    "Los Olivos": ["los olivos", "los oliv@", "los oliv0s", "los oliv", "los oliv0s", "los oliv0z"],
+    "Comas": ["comas", "com@s", "com4s", "comaz", "comas", "com4s"],
+    "Puente Piedra": ["puente piedra", "puente piedr@", "puente piedr0", "puente piedr", "puente piedr0", "puente piedraz"],
+    "Ventanilla": ["ventanilla", "ventanill@", "ventanill0", "ventanill", "ventanill0", "ventanillaz"],
+    "Callao": ["callao", "call@", "call4o", "callao", "call4o", "callaoz"]
+}
+
+def normalize_district_name(district_name):
+    district_name = district_name.lower()
+
+    for standard_name, variations in district_variations.items():
+        if any(variation in district_name for variation in variations):
+            return standard_name
+    return district_name
+
+def preprocess_district(district_name):
+    # Convertir a minúsculas y eliminar caracteres especiales
+    district_name = re.sub(r"[^a-zA-Z\s]", "", district_name.lower())
+    return district_name.strip()
+
+def verify_district(prompt, districts):
+    prompt = preprocess_district(prompt)
+    district_list = [preprocess_district(d) for d in districts['Distrito'].tolist()]
+    best_match, similarity = process.extractOne(prompt, district_list)
+    if similarity > 65:
+        return best_match
+    return None
 
 # Función para verificar los pedidos contra el menú disponible
 def verify_order_with_menu(order_dict, menu):
