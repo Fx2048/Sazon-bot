@@ -90,7 +90,9 @@ def improved_extract_order_and_quantity(prompt, menu):
         'decena': 10,
         'doscenas': 24, 
         'bistec': 1, 
-        
+        # Considerar 'bistec' como unidad
+        'bisteques': 1,  # Variación plural
+        'bistec a la parrilla': 1,  
         # Asumiendo que se refiere a 2 docenas
     }
 
