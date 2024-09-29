@@ -199,10 +199,8 @@ if clear_button:
     st.session_state["district_selected"] = False
     st.session_state["current_district"] = None
 
-# Mostrar el historial de la conversación
-for message in st.session_state.messages:
-    if message["role"] == "system":
-        continue
+# Mostrar los mensajes de la conversación
+for message in st.session_state["messages"]:
     st.markdown(f"**{message['role']}:** {message['content']}")
 
 # Interacción del usuario
@@ -251,7 +249,9 @@ if st.button("Enviar"):
             st.session_state["messages"].append({"role": "assistant", "content": response_unavailable})
 
     # Limpiar el campo de entrada
-    st.session_state.user_input = ""
+    st.session_state.user_input = ""  # Este ajuste se puede quitar si ya no se usa
+
+
 
 
 
