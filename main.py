@@ -16,11 +16,12 @@ if "messages" not in st.session_state:
 
 # Configuración inicial de la página
 st.set_page_config(page_title="SazónBot", page_icon=":pot_of_food:")
-st.title("🍲 SazónBot")
+st.title("🍲 SazonMenu")
 
 # Mostrar mensaje de bienvenida
-intro = """¡Bienvenido a Sazón Bot, el lugar donde todos tus antojos de almuerzo se hacen realidad!
-Comienza a chatear con Sazón Bot y descubre qué puedes pedir, cuánto cuesta y cómo realizar tu pago. ¡Estamos aquí para ayudarte a disfrutar del mejor almuerzo!"""
+intro = """¡Bienvenido a SazonMenu,
+Comienza a chatear con nuestra IA de SazonMenu y descubre qué puedes pedir, cuánto cuesta y cómo realizar tu pago. ¡Estamos aquí para ayudarte a disfrutar del mejor almuerzo! 
+Di "menu" y te atenderemos al toque!!"""
 st.markdown(intro)
 
 # Función para cargar el menú desde un archivo CSV
