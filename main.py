@@ -15,13 +15,12 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
 # Configuración inicial de la página
-st.set_page_config(page_title="SazónBot", page_icon=":pot_of_food:")
-st.title("🍲 SazonMenu")
+st.set_page_config(page_title="Qué buena sazón!", page_icon=":pot_of_food:")
+st.title("Qué buena sazón! 😋")
 
 # Mostrar mensaje de bienvenida
-intro = """¡Bienvenido a SazonMenu,
-Comienza a chatear con nuestra IA de SazonMenu y descubre qué puedes pedir, cuánto cuesta y cómo realizar tu pago. ¡Estamos aquí para ayudarte a disfrutar del mejor almuerzo! 
-Di "menu" y te atenderemos al toque!!"""
+intro = """¡Bienvenido a Qué buena sazón!,
+Di "Carta" y te atenderemos al toque!!"""
 st.markdown(intro)
 
 # Función para cargar el menú desde un archivo CSV
@@ -356,7 +355,7 @@ if not st.session_state["order_placed"]:
     if user_input:
         order_dict = improved_extract_order_and_quantity(user_input, menu)
         if not order_dict:
-            response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato.\n\n"
+            response = "😊 ¡Selecciona un plato! Escribe la cantidad seguida del plato.\n\n"
             response += format_menu(menu)
         else:
             available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
