@@ -62,7 +62,7 @@ def extract_order_and_quantity(prompt, menu):
     Respuesta: {“Ceviche”: 2, “Causa”: 3}
 
     Entrada: “Me gustaría 1 lomo saltado y 4 anticuchos.”
-    Respuesta: {“Lomo Saltado”: 1, “Anticucho”: 4}
+    Respuesta: {“Lomo Saltado”: 1, “Anticuchos”: 4}
 
     Restricciones:
     - La similitud debe ser mayor al 75% para considerar una coincidencia válida.
