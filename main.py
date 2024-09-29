@@ -150,14 +150,14 @@ def normalize_dish_name(dish_name):
         ],
         "Seco de Cordero": [
             "seco de cordero", "sec0 de cordero", "Seco de Cordero", "SECO DE CORDERO",
-            "seco cordero", "sec0 cordero","seco","SECO","Seco",
+            "seco cordero", "sec0 cordero","seco","SECO","Seco","secos",
         ],
         "Pachamanca": [
             "pachamanca", "pachamanc", "pachamanca", "Pachamanca",
-            "PACHAMANKA", "pacha manka", "pacha mnka","pacha manca","Pacha manca",
+            "PACHAMANKA", "pacha manka", "pacha mnka","pacha manca","Pacha manca","pachamancas",
         ],
         "Tacu Tacu": [
-            "tacu tacu", "tacutacu", "tacu-tacu", "Tacu Tacu",
+            "tacu tacu", "tacutacu", "tacu-tacu", "Tacu Tacu","tacutacus",
             "TACU TACU", "tacutac", "tacutac$"
         ],
         "Sopa a la Minuta": [
@@ -166,7 +166,7 @@ def normalize_dish_name(dish_name):
         ],
         "Rocoto Relleno": [
             "rocoto relleno", "rocoto rellen", "rocoto relleno", "Rocoto Relleno",
-            "ROCOTO RELLENO", "rocotorellen", "rocoto rllen"
+            "ROCOTO RELLENO", "rocotorellen", "rocoto rllen","rocotos",
         ],
         "Chicharrón de Cerdo": [
             "chicharron de cerdo", "chicharrones cerdo", "chicharrones", "Chicharrón de Cerdo",
@@ -178,7 +178,7 @@ def normalize_dish_name(dish_name):
         ],
         "Pescado a la Plancha": [
             "pescado a la plancha", "pesacado a la plancha", "pescado plancha",
-            "Pescado a la Plancha", "PESCADO A LA PLANCHA", "pesca d a la plancha"
+            "Pescado a la Plancha", "PESCADO A LA PLANCHA", "pesca d a la plancha","pescados",
         ],
         "Bistec a la parrilla": [
             "bistec a la parrilla", "bistec la parrilla", "bistec parrilla",
@@ -190,11 +190,11 @@ def normalize_dish_name(dish_name):
         ],
         "Ceviche Clásico": [
             "ceviche clasico", "ceviche clasico", "cevichelásico", "Ceviche Clásico",
-            "CEVICHE CLÁSICO", "cevi chclásico", "ceviche clsc"
+            "CEVICHE CLÁSICO", "cevi chclásico", "ceviche clsc","ceviches",
         ],
         "Sopa Criolla": [
             "sopa criolla", "sopacriolla", "sopa criolla", "Sopa Criolla",
-            "SOPA CRIOLLA", "sopa crll", "sopa c.",
+            "SOPA CRIOLLA", "sopa crll", "sopa c.","sopas criollas",
         ],
         "Pollo en Salsa de Cacahuate": [
             "pollo en salsa de cacahuate", "pollo en salsa cacahuate", "pollo s/cacahuate",
