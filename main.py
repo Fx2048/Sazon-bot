@@ -1,7 +1,6 @@
 import pandas as pd
 import streamlit as st
 from datetime import datetime
-from copy import deepcopy
 from fuzzywuzzy import fuzz, process
 import re
 
@@ -19,13 +18,10 @@ if "messages" not in st.session_state:
 st.set_page_config(page_title="SazónBot", page_icon=":pot_of_food:")
 st.title("🍲 SazónBot")
 
-
 # Mostrar mensaje de bienvenida
 intro = """¡Bienvenido a Sazón Bot, el lugar donde todos tus antojos de almuerzo se hacen realidad!
-
 Comienza a chatear con Sazón Bot y descubre qué puedes pedir, cuánto cuesta y cómo realizar tu pago. ¡Estamos aquí para ayudarte a disfrutar del mejor almuerzo!"""
 st.markdown(intro)
-
 
 # Función para cargar el menú desde un archivo CSV
 def load_menu(csv_file):
@@ -55,12 +51,15 @@ def save_order_to_csv(order_dict, district, filename="orders.csv"):
         })
     df_orders = pd.DataFrame(orders_list)
     df_orders.to_csv(filename, mode='a', header=False, index=False)
-
-
 # Función mejorada para extraer el pedido y la cantidad usando similitud
 def improved_extract_order_and_quantity(prompt, menu):
+    if not prompt:
+        return {}
+
+    # Definir el patrón para capturar las cantidades y nombres de platos en la entrada del usuario
     pattern = r"(\d+|uno|dos|tres|cuatro|cinco)?\s*([^\d,]+)"
     orders = re.findall(pattern, prompt.lower())
+
     order_dict = {}
     menu_items = menu['Plato'].tolist()
 
@@ -270,16 +269,6 @@ def normalize_dish_name(dish_name):
 
     return dish_name
 
-    for quantity, dish in orders:
-        dish_cleaned = dish.strip()
-        best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.token_set_ratio)
-
-        if similarity > 65:
-            quantity = int(quantity) if quantity.isdigit() else num_text_to_int.get(quantity, 1)
-            order_dict[best_match] = order_dict.get(best_match, 0) + quantity
-
-    return order_dict
-
 # Función para verificar los pedidos contra el menú disponible
 def verify_order_with_menu(order_dict, menu):
     available_orders = {}
@@ -326,12 +315,9 @@ if not st.session_state["order_placed"]:
         order_dict = improved_extract_order_and_quantity(user_input, menu)
         if not order_dict:
             response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato.\n\n"
-            response += "\n".join([f"**{row['Plato']}**\n{row['Descripción']}\n**Precio:** S/{row['Precio']}" for idx, row in menu.iterrows()])
+            response += format_menu(menu)
         else:
-            available_orders, unavailable_orders = process_orders(order_dict, menu)
-            # Aquí puedes agregar la lógica para manejar los pedidos disponibles y no disponibles
-
-      
+            available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
             if unavailable_orders:
                 response = f"Lo siento, los siguientes platos no están disponibles: {', '.join(unavailable_orders)}."
             else:
@@ -356,5 +342,6 @@ if user_input:
 
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
