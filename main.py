@@ -55,6 +55,7 @@ def improved_extract_order_and_quantity(prompt, menu):
     if not prompt:
         return {}
 
+    # Definir el patrón para capturar las cantidades y nombres de platos en la entrada del usuario
     pattern = r"(\d+|uno|dos|tres|cuatro|cinco)?\s*([^\d,]+)"
     orders = re.findall(pattern, prompt.lower())
 
@@ -67,9 +68,11 @@ def improved_extract_order_and_quantity(prompt, menu):
         dish_cleaned = dish.strip()
         dish_cleaned = normalize_dish_name(dish_cleaned)
 
+        # Buscar la mejor coincidencia para el nombre del plato en el menú usando fuzzy matching
         best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.token_set_ratio)
 
         if similarity > 65:
+            # Convertir el valor textual de la cantidad a número entero, si corresponde
             if not quantity:
                 quantity = 1
             elif quantity.isdigit():
@@ -77,7 +80,11 @@ def improved_extract_order_and_quantity(prompt, menu):
             else:
                 quantity = num_text_to_int.get(quantity, 1)
 
-            order_dict[best_match] = quantity
+            # Sumar la cantidad de pedidos si el plato ya ha sido mencionado previamente
+            if best_match in order_dict:
+                order_dict[best_match] += quantity
+            else:
+                order_dict[best_match] = quantity
 
     return order_dict
 
@@ -85,10 +92,13 @@ def improved_extract_order_and_quantity(prompt, menu):
 def normalize_dish_name(dish_name):
     dish_name = dish_name.lower()
 
+    # Definir un diccionario para manejar las variaciones de nombres de platos
     dish_variations = {
         "ají de gallina": ["aji de gallina", "ajies de gallina", "gallina"],
         "anticuchos": ["anticucho", "antichucos", "antochucos"],
-        "sopa a la minuta": ["sopa", "minuta"]
+        "sopa a la minuta": ["sopa", "minuta"],
+        "chicharrón de cerdo": ["chicharron", "chicharrones", "cerdo"],
+        "ceviche clásico": ["ceviche", "sebiche", "cebiche"]
     }
 
     for standard_name, variations in dish_variations.items():
