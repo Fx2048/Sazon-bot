@@ -2,8 +2,8 @@ import pandas as pd
 import streamlit as st
 from datetime import datetime
 from copy import deepcopy
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process  # Para similitud en nombres de distritos
+from fuzzywuzzy import fuzz, process
+ # Para similitud en nombres de distritos
 import re
 import openai  # Revisa que tengas instalado openai
 
@@ -182,3 +182,51 @@ if user_input := st.chat_input("Escribe aquí..."):
     # Guardar el mensaje en la sesión
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.messages.append({"role": "assistant", "content": response})
+
+def improved_extract_order_and_quantity(prompt, menu):
+    if not prompt:
+        return {}
+
+    # Expresión regular mejorada para manejar números escritos y valores numéricos
+    pattern = r"(\d+|uno|dos|tres|cuatro|cinco)?\s*([^\d,]+)"
+    orders = re.findall(pattern, prompt.lower())  # Encuentra todas las coincidencias
+
+    order_dict = {}
+    menu_items = menu['Plato'].tolist()  # Lista de platos en el menú
+
+    # Diccionario para convertir números escritos en texto a enteros
+    num_text_to_int = {'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5}
+
+    for quantity, dish in orders:
+        dish_cleaned = dish.strip()  # Limpiar los espacios adicionales
+
+        # Usar fuzz.token_sort_ratio para obtener la mejor coincidencia con el menú
+        best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.token_sort_ratio)
+
+        # Si la similitud es mayor al umbral del 60%
+        if similarity > 60:
+            # Si no se especifica cantidad, asignar 1
+            if not quantity:
+                quantity = 1
+            # Convertir la cantidad en número, ya sea digitada o escrita
+            elif quantity.isdigit():
+                quantity = int(quantity)
+            else:
+                # Convertir el texto a número utilizando el diccionario
+                quantity = num_text_to_int.get(quantity, 1)
+
+            # Agregar al diccionario el plato con la cantidad correspondiente
+            order_dict[best_match] = quantity
+
+    return order_dict
+
+# Ejemplo del menú
+menu_df = pd.DataFrame({
+    'Plato': ['Ceviche', 'Anticucho', 'Lomo Saltado', 'Causa', 'Sopa Criolla', 'Tortillas', 'Tallarines'],
+    'Distrito Disponible': ['Miraflores', 'Miraflores', 'San Isidro', 'San Isidro', 'Miraflores', 'San Isidro', 'Miraflores']
+})
+
+# Pruebas con entradas variadas
+print(improved_extract_order_and_quantity("Quiero 4 tortillas y dos tallarines.", menu_df))  # {'Tortillas': 4, 'Tallarines': 2}
+print(improved_extract_order_and_quantity("Me gustaría tres ceviches y una sopa criolla.", menu_df))  # {'Ceviche': 3, 'Sopa Criolla': 1}
+print(improved_extract_order_and_quantity("1 ceviche", menu_df))  # {'Ceviche': 1}
