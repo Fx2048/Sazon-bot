@@ -325,10 +325,13 @@ if not st.session_state["order_placed"]:
     if user_input:
         order_dict = improved_extract_order_and_quantity(user_input, menu)
         if not order_dict:
-            response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato\n\n"
-        response += "\n".join([f"**{row['Plato']}**\n{row['Descripción']}\n**Precio:** S/{row['Precio']}" for idx, row in menu.iterrows()])
+            response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato.\n\n"
+            response += "\n".join([f"**{row['Plato']}**\n{row['Descripción']}\n**Precio:** S/{row['Precio']}" for idx, row in menu.iterrows()])
         else:
-            available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
+            available_orders, unavailable_orders = process_orders(order_dict, menu)
+            # Aquí puedes agregar la lógica para manejar los pedidos disponibles y no disponibles
+
+      
             if unavailable_orders:
                 response = f"Lo siento, los siguientes platos no están disponibles: {', '.join(unavailable_orders)}."
             else:
