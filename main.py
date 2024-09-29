@@ -37,7 +37,7 @@ def load_districts(csv_file):
 def filter_menu_by_district(menu, district_actual):
     if district_actual is None:
         return pd.DataFrame()  # Retornar un DataFrame vacío si el distrito es None
-    return menu[menu['Distrito Disponible'].str.contains(district_actual, na=False)]
+    return menu[menu['Distrito Disponible'].str.contains(district_actual, na=False, case=False)]
 
 # Función para verificar el distrito con similitud
 def verify_district(prompt, districts):
@@ -63,81 +63,80 @@ def improved_extract_order_and_quantity(prompt, menu):
     menu_items = menu['Plato'].tolist()
 
     num_text_to_int = {
-    'uno': 1,
-    'una': 1,
-    'dos': 2,
-    'tres': 3,
-    'cuatro': 4,
-    'cinco': 5,
-    'seis': 6,
-    'seis': 6,
-    'siete': 7,
-    'ocho': 8,
-    'nueve': 9,
-    'diez': 10,
-    'once': 11,
-    'doce': 12,
-    'media docena': 6,
-    'media docena': 6,
-    'media docena de huevos': 6,
-    'docena': 12,
-    'docena de huevos': 12,
-    'cien': 100,
-    'doscientos': 200,
-    'trescientos': 300,
-    'cuatrocientos': 400,
-    'quinientos': 500,
-    'seiscientos': 600,
-    'setecientos': 700,
-    'ochocientos': 800,
-    'novecientos': 900,
-    'mil': 1000,
-    'mil uno': 1001,
-    'mil dos': 1002,
-    'mil tres': 1003,
-    # Variaciones con errores ortográficos
-    'un': 1,
-    'uno ': 1,
-    'uuno': 1,
-    'dos ': 2,
-    'tres.': 3,
-    'cuatro ': 4,
-    'cinco!': 5,
-    'siex': 6,
-    'siete ': 7,
-    'och0': 8,
-    'nueve!': 9,
-    'diez ': 10,
-    'media': 6,  # Omitiendo "docena"
-    'docena ': 12,
-    'decena': 10,
-    'doscenas': 24,  # Asumiendo que se refiere a 2 docenas
-    'media docena': 6,
-    'media': 6,  # Omitiendo "docena"
-    '5.': 5,     # Puntuación al final
-    '2 ': 2,
-    'tres': 3,
-    'cuatro.': 4,
-    'cinco': 5,
-    'seis!': 6,
-    'siete,': 7,
-    'ocho.': 8,
-    'nueve ': 9,
-    'diez': 10,
-    'once ': 11,
-    'doce.': 12,
-    'docena': 12,
-    'cien ': 100,
-    'ciento': 100,
-    'mil ': 1000,
-    'mil uno': 1001,
-    'mil y uno': 1001,
-    'mil dos': 1002,
-    'mil tres': 1003,
-    'mil cuatro': 1004,
-    'mil cinco': 1005
-}
-
+        'uno': 1,
+        'una': 1,
+        'dos': 2,
+        'tres': 3,
+        'cuatro': 4,
+        'cinco': 5,
+        'seis': 6,
+        'seis': 6,
+        'siete': 7,
+        'ocho': 8,
+        'nueve': 9,
+        'diez': 10,
+        'once': 11,
+        'doce': 12,
+        'media docena': 6,
+        'media docena': 6,
+        'media docena de huevos': 6,
+        'docena': 12,
+        'docena de huevos': 12,
+        'cien': 100,
+        'doscientos': 200,
+        'trescientos': 300,
+        'cuatrocientos': 400,
+        'quinientos': 500,
+        'seiscientos': 600,
+        'setecientos': 700,
+        'ochocientos': 800,
+        'novecientos': 900,
+        'mil': 1000,
+        'mil uno': 1001,
+        'mil dos': 1002,
+        'mil tres': 1003,
+        # Variaciones con errores ortográficos
+        'un': 1,
+        'uno ': 1,
+        'uuno': 1,
+        'dos ': 2,
+        'tres.': 3,
+        'cuatro ': 4,
+        'cinco!': 5,
+        'siex': 6,
+        'siete ': 7,
+        'och0': 8,
+        'nueve!': 9,
+        'diez ': 10,
+        'media': 6,  # Omitiendo "docena"
+        'docena ': 12,
+        'decena': 10,
+        'doscenas': 24,  # Asumiendo que se refiere a 2 docenas
+        'media docena': 6,
+        'media': 6,  # Omitiendo "docena"
+        '5.': 5,     # Puntuación al final
+        '2 ': 2,
+        'tres': 3,
+        'cuatro.': 4,
+        'cinco': 5,
+        'seis!': 6,
+        'siete,': 7,
+        'ocho.': 8,
+        'nueve ': 9,
+        'diez': 10,
+        'once ': 11,
+        'doce.': 12,
+        'docena': 12,
+        'cien ': 100,
+        'ciento': 100,
+        'mil ': 1000,
+        'mil uno': 1001,
+        'mil y uno': 1001,
+        'mil dos': 1002,
+        'mil tres': 1003,
+        'mil cuatro': 1004,
+        'mil cinco': 1005
+    }
 
     for quantity, dish in orders:
         dish_cleaned = dish.strip()
@@ -167,99 +166,99 @@ def improved_extract_order_and_quantity(prompt, menu):
 def normalize_dish_name(dish_name):
     dish_name = dish_name.lower()
 
-    # Definir un diccionario para manejar las variaciones de nombres de platos
-    dish_variations = {
-    "Arroz con Pollo": [
-        "arroz con pollo", "arroz cn pollo", "arroz conpllo", "Arroz Con Pollo",
-        "ARROZ CON POLLO", "arr0z con pollo", "arroz c/ pollo", "arroz pollo",
-        "arrozconpollo", "arroz, pollo"
-    ],
-    "Tallarines Verdes": [
-        "tallarines verdes", "talarines verdes", "tallarinesv verdes", "Tallarines Verdes",
-        "TALLARINES VERDES", "tallarines vrdes", "tallarines vrd", "tallarine$ verdes","tallarines",
-    ],
-    "Lomo Saltado": [
-        "lomo saltado", "lomo$altado", "lomo saltado", "Lomo Saltado",
-        "LOMO SALTADO", "lomo sltado", "lomo s/tado", "lomosaltado","lomo",
-    ],
-    "Causa Limeña": [
-        "causa limena", "causalimeña", "Causa Limeña", "CAUSA LIMEÑA",
-        "causa limena", "causa limeña", "cau$a limeña","causa",
-    ],
-    "Ají de Gallina": [
-        "aji de gallina", "aji de gallina", "aji gallina", "ají de gallina",
-        "AJI DE GALLINA", "ajies de gallina", "ajis de gallina", "aji de gallin","ajies","ajíes",
-        "ajis", "aji's", "ajíé de gallina"
-    ],
-    "Pollo a la Brasa": [
-        "pollo a la brasa", "polloala brasa", "pollo a la brasa", "Pollo a la Brasa",
-        "POLLO A LA BRASA", "pollo brasa", "pollo brasa", "p0llo a la brasa","brasa",
-    ],
-    "Seco de Cordero": [
-        "seco de cordero", "sec0 de cordero", "Seco de Cordero", "SECO DE CORDERO",
-        "seco cordero", "sec0 cordero","seco","SECO","Seco",
-    ],
-    "Pachamanca": [
-        "pachamanca", "pachamanc", "pachamanca", "Pachamanca",
-        "PACHAMANKA", "pacha manka", "pacha mnka","pacha manca","Pacha manca",
-    ],
-    "Tacu Tacu": [
-        "tacu tacu", "tacutacu", "tacu-tacu", "Tacu Tacu",
-        "TACU TACU", "tacutac", "tacutac$"
-    ],
-    "Sopa a la Minuta": [
-        "sopa a la minuta", "sopaala minuta", "sopa a la mnuta", "Sopa a la Minuta",
-        "SOPA A LA MINUTA", "sopa min", "sopa mn"
-    ],
-    "Rocoto Relleno": [
-        "rocoto relleno", "rocoto rellen", "rocoto relleno", "Rocoto Relleno",
-        "ROCOTO RELLENO", "rocotorellen", "rocoto rllen"
-    ],
-    "Chicharrón de Cerdo": [
-        "chicharron de cerdo", "chicharrones cerdo", "chicharrones", "Chicharrón de Cerdo",
-        "CHICHARRÓN DE CERDO", "chicharron", "chicharron cerdo", "chicharron d cerdo"
-    ],
-    "Sanguchito de Chicharrón": [
-        "sanguchito de chicharron", "sanguchito chicharrón", "sanguchitos chicharrón",
-        "Sanguchito de Chicharrón", "SANGUCHITO DE CHICHARRÓN", "sanguchito", "sanguchitodechicharrón"
-    ],
-    "Pescado a la Plancha": [
-        "pescado a la plancha", "pesacado a la plancha", "pescado plancha",
-        "Pescado a la Plancha", "PESCADO A LA PLANCHA", "pesca d a la plancha"
-    ],
-    "Bistec a la parrilla": [
-        "bistec a la parrilla", "bistec la parrilla", "bistec parrilla",
-        "Bistec a la Parrilla", "BISTEC A LA PARRILLA", "bistec a la prrilla", "bistec parrila"
-    ],
-    "Tortilla de Huauzontle": [
-        "tortilla de huauzontle", "tortilla huauzontle", "tortilla de huauzonlte",
-        "Tortilla de Huauzontle", "TORTILLA DE HUAUZONTLE", "tortila de huauzontle"
-    ],
-    "Ceviche Clásico": [
-        "ceviche clasico", "ceviche clasico", "cevichelásico", "Ceviche Clásico",
-        "CEVICHE CLÁSICO", "cevi chclásico", "ceviche clsc"
-    ],
-    "Sopa Criolla": [
-        "sopa criolla", "sopacriolla", "sopa criolla", "Sopa Criolla",
-        "SOPA CRIOLLA", "sopa crll", "sopa c.",
-    ],
-    "Pollo en Salsa de Cacahuate": [
-        "pollo en salsa de cacahuate", "pollo en salsa cacahuate", "pollo s/cacahuate",
-        "Pollo en Salsa de Cacahuate", "POLLO EN SALSA DE CACAHUATE", "polloen salsacahuate","salsa de cacahuate",
-    ],
-    "Ensalada de Quinoa": [
-        "ensalada de quinoa", "ensalada quinoa", "ensalqdadequinoa", "Ensalada de Quinoa",
-        "ENSALADA DE QUINOA", "ensalada d quinoa", "ensaladas quinoa","ensalada", "quinoa",
-    ],
-    "Anticuchos": [
-        "anticuchos", "anticucho", "antichucos", "antochucos", "Anticuchos",
-        "ANTICUCHOS", "anticuhos", "anticuchos$"
-    ],
-    "Bebidas Naturales": [
-        "bebidas naturales", "bebida$ naturales", "bebida natural", "Bebidas Naturales",
-        "BEBIDAS NATURALES", "bebidn naturales", "beidas natrales", "bebidas",
-    ]
-}
+    # Diccionario con las variaciones de nombres de platos
+dish_variations = {
+        "Arroz con Pollo": [
+            "arroz con pollo", "arroz cn pollo", "arroz conpllo", "Arroz Con Pollo",
+            "ARROZ CON POLLO", "arr0z con pollo", "arroz c/ pollo", "arroz pollo",
+            "arrozconpollo", "arroz, pollo"
+        ],
+        "Tallarines Verdes": [
+            "tallarines verdes", "talarines verdes", "tallarinesv verdes", "Tallarines Verdes",
+            "TALLARINES VERDES", "tallarines vrdes", "tallarines vrd", "tallarine$ verdes","tallarines",
+        ],
+        "Lomo Saltado": [
+            "lomo saltado", "lomo$altado", "lomo saltado", "Lomo Saltado",
+            "LOMO SALTADO", "lomo sltado", "lomo s/tado", "lomosaltado","lomo",
+        ],
+        "Causa Limeña": [
+            "causa limena", "causalimeña", "Causa Limeña", "CAUSA LIMEÑA",
+            "causa limena", "causa limeña", "cau$a limeña","causa",
+        ],
+        "Ají de Gallina": [
+            "aji de gallina", "aji de gallina", "aji gallina", "ají de gallina",
+            "AJI DE GALLINA", "ajies de gallina", "ajis de gallina", "aji de gallin","ajies","ajíes",
+            "ajis", "aji's", "ajíé de gallina"
+        ],
+        "Pollo a la Brasa": [
+            "pollo a la brasa", "polloala brasa", "pollo a la brasa", "Pollo a la Brasa",
+            "POLLO A LA BRASA", "pollo brasa", "pollo brasa", "p0llo a la brasa","brasa",
+        ],
+        "Seco de Cordero": [
+            "seco de cordero", "sec0 de cordero", "Seco de Cordero", "SECO DE CORDERO",
+            "seco cordero", "sec0 cordero","seco","SECO","Seco",
+        ],
+        "Pachamanca": [
+            "pachamanca", "pachamanc", "pachamanca", "Pachamanca",
+            "PACHAMANKA", "pacha manka", "pacha mnka","pacha manca","Pacha manca",
+        ],
+        "Tacu Tacu": [
+            "tacu tacu", "tacutacu", "tacu-tacu", "Tacu Tacu",
+            "TACU TACU", "tacutac", "tacutac$"
+        ],
+        "Sopa a la Minuta": [
+            "sopa a la minuta", "sopaala minuta", "sopa a la mnuta", "Sopa a la Minuta",
+            "SOPA A LA MINUTA", "sopa min", "sopa mn"
+        ],
+        "Rocoto Relleno": [
+            "rocoto relleno", "rocoto rellen", "rocoto relleno", "Rocoto Relleno",
+            "ROCOTO RELLENO", "rocotorellen", "rocoto rllen"
+        ],
+        "Chicharrón de Cerdo": [
+            "chicharron de cerdo", "chicharrones cerdo", "chicharrones", "Chicharrón de Cerdo",
+            "CHICHARRÓN DE CERDO", "chicharron", "chicharron cerdo", "chicharron d cerdo"
+        ],
+        "Sanguchito de Chicharrón": [
+            "sanguchito de chicharron", "sanguchito chicharrón", "sanguchitos chicharrón",
+            "Sanguchito de Chicharrón", "SANGUCHITO DE CHICHARRÓN", "sanguchito", "sanguchitodechicharrón"
+        ],
+        "Pescado a la Plancha": [
+            "pescado a la plancha", "pesacado a la plancha", "pescado plancha",
+            "Pescado a la Plancha", "PESCADO A LA PLANCHA", "pesca d a la plancha"
+        ],
+        "Bistec a la parrilla": [
+            "bistec a la parrilla", "bistec la parrilla", "bistec parrilla",
+            "Bistec a la Parrilla", "BISTEC A LA PARRILLA", "bistec a la prrilla", "bistec parrila"
+        ],
+        "Tortilla de Huauzontle": [
+            "tortilla de huauzontle", "tortilla huauzontle", "tortilla de huauzonlte",
+            "Tortilla de Huauzontle", "TORTILLA DE HUAUZONTLE", "tortila de huauzontle"
+        ],
+        "Ceviche Clásico": [
+            "ceviche clasico", "ceviche clasico", "cevichelásico", "Ceviche Clásico",
+            "CEVICHE CLÁSICO", "cevi chclásico", "ceviche clsc"
+        ],
+        "Sopa Criolla": [
+            "sopa criolla", "sopacriolla", "sopa criolla", "Sopa Criolla",
+            "SOPA CRIOLLA", "sopa crll", "sopa c.",
+        ],
+        "Pollo en Salsa de Cacahuate": [
+            "pollo en salsa de cacahuate", "pollo en salsa cacahuate", "pollo s/cacahuate",
+            "Pollo en Salsa de Cacahuate", "POLLO EN SALSA DE CACAHUATE", "polloen salsacahuate","salsa de cacahuate",
+        ],
+        "Ensalada de Quinoa": [
+            "ensalada de quinoa", "ensalada quinoa", "ensalqdadequinoa", "Ensalada de Quinoa",
+            "ENSALADA DE QUINOA", "ensalada d quinoa", "ensaladas quinoa","ensalada", "quinoa",
+        ],
+        "Anticuchos": [
+            "anticuchos", "anticucho", "antichucos", "antochucos", "Anticuchos",
+            "ANTICUCHOS", "anticuhos", "anticuchos$"
+        ],
+        "Bebidas Naturales": [
+            "bebidas naturales", "bebida$ naturales", "bebida natural", "Bebidas Naturales",
+            "BEBIDAS NATURALES", "bebidn naturales", "beidas natrales", "bebidas",
+        ]
+    }
 
 
     for standard_name, variations in dish_variations.items():
@@ -300,10 +299,7 @@ districts = load_districts("distritos.csv")
 # Estado inicial del chatbot
 initial_state = [
     {"role": "system", "content": "You are SazónBot. A friendly assistant helping customers with their lunch orders."},
-    {
-        "role": "assistant",
-        "content": f"👨‍🍳 Antes de comenzar, ¿de dónde nos visitas? Por favor, menciona tu distrito (por ejemplo: Miraflores)."
-    },
+    {"role": "assistant", "content": "👨‍🍳 Antes de comenzar, ¿de dónde nos visitas? Por favor, menciona tu distrito (por ejemplo: Miraflores)."}
 ]
 
 # Inicializar la conversación
@@ -359,4 +355,5 @@ if user_input := st.chat_input("Escribe aquí..."):
 
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.messages.append({"role": "assistant", "content": response})
+
 
