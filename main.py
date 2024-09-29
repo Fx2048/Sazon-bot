@@ -88,7 +88,10 @@ def improved_extract_order_and_quantity(prompt, menu):
         'diez ': 10,
         'media': 6,  # Omitiendo "docena"
         'decena': 10,
-        'doscenas': 24,  # Asumiendo que se refiere a 2 docenas
+        'doscenas': 24, 
+        'bistec': 1, 
+        
+        # Asumiendo que se refiere a 2 docenas
     }
 
     for quantity, dish in orders:
