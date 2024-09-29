@@ -180,7 +180,7 @@ if user_input := st.chat_input("Escribe aquí..."):
         # Procesar el pedido con cantidades específicas
         order_dict = extract_order_and_quantity(user_input, menu)
         if not order_dict:
-            response = f"😊 No has seleccionado ningún plato del menú. Por favor revisa: "Ejemplo de solicitud: 1 Pescado a la Plancha""
+            response = f"😊 No has seleccionado ningún plato del menú. Por favor revisa: 'Ejemplo de solicitud: 1 Pescado a la Plancha'"
         else:
             available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
             if unavailable_orders:
