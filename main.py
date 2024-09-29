@@ -19,6 +19,14 @@ if "messages" not in st.session_state:
 st.set_page_config(page_title="SazónBot", page_icon=":pot_of_food:")
 st.title("🍲 SazónBot")
 
+
+# Mostrar mensaje de bienvenida
+intro = """¡Bienvenido a Sazón Bot, el lugar donde todos tus antojos de almuerzo se hacen realidad!
+
+Comienza a chatear con Sazón Bot y descubre qué puedes pedir, cuánto cuesta y cómo realizar tu pago. ¡Estamos aquí para ayudarte a disfrutar del mejor almuerzo!"""
+st.markdown(intro)
+
+
 # Función para cargar el menú desde un archivo CSV
 def load_menu(csv_file):
     return pd.read_csv(csv_file, delimiter=';')
