@@ -3,31 +3,24 @@ import streamlit as st
 from datetime import datetime
 from copy import deepcopy
 from fuzzywuzzy import fuzz, process
- # Para similitud en nombres de distritos
 import re
-import openai  # Revisa que tengas instalado openai
 
 # Inicializar las claves de session_state si no existen
 if "district_selected" not in st.session_state:
-    st.session_state["district_selected"] = False  # Indica si ya se seleccionó un distrito
+    st.session_state["district_selected"] = False
 
 if "current_district" not in st.session_state:
-    st.session_state["current_district"] = None  # Almacena el distrito actual
+    st.session_state["current_district"] = None
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
-
-# Cargar el API key de OpenAI desde Streamlit Secrets (si es necesario)
-client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Configuración inicial de la página
 st.set_page_config(page_title="SazónBot", page_icon=":pot_of_food:")
 st.title("🍲 SazónBot")
 
 # Mensaje de bienvenida
-intro = """¡Bienvenido a Sazón Bot, el lugar donde todos tus antojos de almuerzo se hacen realidad!
-
-Comienza a chatear con Sazón Bot y descubre qué puedes pedir, cuánto cuesta y cómo realizar tu pago. ¡Estamos aquí para ayudarte a disfrutar del mejor almuerzo!"""
+intro = """¡Bienvenido a Sazón Bot, el lugar donde todos tus antojos de almuerzo se hacen realidad!"""
 st.markdown(intro)
 
 # Función para cargar el menú desde un archivo CSV
@@ -49,62 +42,79 @@ def filter_menu_by_district(menu, district_actual):
 # Función para verificar el distrito con similitud
 def verify_district(prompt, districts):
     if not prompt:
-        return None  # Retornar None si el prompt es None
+        return None
 
     district_list = districts['Distrito'].tolist()
     best_match, similarity = process.extractOne(prompt, district_list)
-    if similarity > 75:  # Usar un umbral de similitud del 75%
+    if similarity > 75:
         return best_match
     return None
 
 # Función mejorada para extraer el pedido y la cantidad usando similitud
-def extract_order_and_quantity(prompt, menu):
-    """
-    Extrae la cantidad y el nombre de cada plato en el pedido del usuario utilizando coincidencias parciales.
-    """
-
+def improved_extract_order_and_quantity(prompt, menu):
     if not prompt:
-        return {}  # Retornar un diccionario vacío si el prompt es None
+        return {}
 
-    # Expresión regular para identificar cantidades y nombres de platos
-    pattern = r"(\d+)?\s*([^\d,]+)"  # Buscar 'cantidad opcional + nombre del plato'
-    orders = re.findall(pattern, prompt.lower())  # Encontrar todas las coincidencias
+    pattern = r"(\d+|uno|dos|tres|cuatro|cinco)?\s*([^\d,]+)"
+    orders = re.findall(pattern, prompt.lower())
 
     order_dict = {}
-    menu_items = menu['Plato'].tolist()  # Convertir los platos del menú en una lista
+    menu_items = menu['Plato'].tolist()
+
+    num_text_to_int = {'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5}
 
     for quantity, dish in orders:
         dish_cleaned = dish.strip()
-        # Usar fuzzy matching para encontrar la mejor coincidencia del plato en el menú
-        best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.partial_ratio)
-        if similarity > 75:  # Si la similitud es mayor a un 75%, consideramos que es una coincidencia válida
+        dish_cleaned = normalize_dish_name(dish_cleaned)
+
+        best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.token_set_ratio)
+
+        if similarity > 65:
             if not quantity:
-                quantity = 1  # Si no se especifica una cantidad, asumir 1
-            else:
+                quantity = 1
+            elif quantity.isdigit():
                 quantity = int(quantity)
+            else:
+                quantity = num_text_to_int.get(quantity, 1)
+
             order_dict[best_match] = quantity
 
     return order_dict
+
+# Función para normalizar los nombres de los platos y manejar abreviaciones
+def normalize_dish_name(dish_name):
+    dish_name = dish_name.lower()
+
+    dish_variations = {
+        "ají de gallina": ["aji de gallina", "ajies de gallina", "gallina"],
+        "anticuchos": ["anticucho", "antichucos", "antochucos"],
+        "sopa a la minuta": ["sopa", "minuta"]
+    }
+
+    for standard_name, variations in dish_variations.items():
+        if any(variation in dish_name for variation in variations):
+            return standard_name
+
+    return dish_name
 
 # Función para verificar los pedidos contra el menú disponible
 def verify_order_with_menu(order_dict, menu):
     available_orders = {}
     unavailable_orders = []
 
-    # Iterar sobre el diccionario de pedidos y verificar con el menú
     for dish, quantity in order_dict.items():
         if dish in menu['Plato'].values:
             available_orders[dish] = quantity
         else:
             unavailable_orders.append(dish)
-    
+
     return available_orders, unavailable_orders
 
-# Función para mostrar el menú en un formato más amigable
+# Función para mostrar el menú en un formato amigable
 def format_menu(menu):
     if menu.empty:
         return "No hay platos disponibles."
-    
+
     formatted_menu = []
     for idx, row in menu.iterrows():
         formatted_menu.append(
@@ -112,7 +122,7 @@ def format_menu(menu):
         )
     return "\n\n".join(formatted_menu)
 
-# Cargar el menú y los distritos desde archivos CSV
+# Cargar el menú y los distritos
 menu = load_menu("carta.csv")
 districts = load_districts("distritos.csv")
 
@@ -125,11 +135,11 @@ initial_state = [
     },
 ]
 
-# Inicializar la conversación si no existe en la sesión
+# Inicializar la conversación
 if "messages" not in st.session_state:
     st.session_state["messages"] = deepcopy(initial_state)
-    st.session_state["district_selected"] = False  # Indica si ya se seleccionó un distrito
-    st.session_state["current_district"] = None  # Almacena el distrito actual
+    st.session_state["district_selected"] = False
+    st.session_state["current_district"] = None
 
 # Botón para limpiar la conversación
 clear_button = st.button("Limpiar Conversación", key="clear")
@@ -149,25 +159,22 @@ for message in st.session_state.messages:
 if user_input := st.chat_input("Escribe aquí..."):
     with st.chat_message("user", avatar="👤"):
         st.markdown(user_input)
-        
+
     if not st.session_state["district_selected"]:
-        # Verificar el distrito
         district = verify_district(user_input, districts)
         if not district:
-            response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts['Distrito'].tolist())}."
+            response = f"Lo siento, pero no entregamos en ese distrito. Distritos disponibles: {', '.join(districts['Distrito'].tolist())}."
         else:
             st.session_state["district_selected"] = True
             st.session_state["current_district"] = district
-            # Filtrar el menú por distrito y mostrarlo
             filtered_menu = filter_menu_by_district(menu, district)
             menu_display = format_menu(filtered_menu)
 
-            response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**.Ejm: 2 Pescado a la Plancha"
+            response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?** Ejm: 2 Pescado a la Plancha."
     else:
-        # Procesar el pedido con cantidades específicas
-        order_dict = extract_order_and_quantity(user_input, menu)
+        order_dict = improved_extract_order_and_quantity(user_input, menu)
         if not order_dict:
-            response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato,ejm: 2 Pescado a la Plancha"
+            response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato, ejm: 2 Pescado a la Plancha."
         else:
             available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
             if unavailable_orders:
@@ -178,83 +185,7 @@ if user_input := st.chat_input("Escribe aquí..."):
     # Mostrar la respuesta del asistente
     with st.chat_message("assistant", avatar="🍲"):
         st.markdown(response)
-        
-    # Guardar el mensaje en la sesión
+
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.messages.append({"role": "assistant", "content": response})
-
-import re
-from fuzzywuzzy import fuzz, process
-import pandas as pd
-
-# Función mejorada para extraer el pedido y la cantidad usando similitud
-def improved_extract_order_and_quantity(prompt, menu):
-    """
-    Extrae la cantidad y el nombre de cada plato en el pedido del usuario utilizando coincidencias parciales y mejoradas.
-    """
-    if not prompt:
-        return {}
-
-    # Expresión regular mejorada para manejar números escritos y valores numéricos
-    pattern = r"(\d+|uno|dos|tres|cuatro|cinco)?\s*([^\d,]+)"
-    orders = re.findall(pattern, prompt.lower())  # Encuentra todas las coincidencias
-
-    order_dict = {}
-    menu_items = menu['Plato'].tolist()  # Lista de platos en el menú
-
-    # Diccionario para convertir números escritos en texto a enteros
-    num_text_to_int = {'uno': 1, 'dos': 2, 'tres': 3, 'cuatro': 4, 'cinco': 5}
-
-    for quantity, dish in orders:
-        dish_cleaned = dish.strip()  # Limpiar los espacios adicionales
-
-        # Preprocesar las variaciones comunes de los nombres de los platos
-        dish_cleaned = normalize_dish_name(dish_cleaned)
-
-        # Usar fuzz.token_set_ratio para obtener la mejor coincidencia con el menú
-        best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.token_set_ratio)
-
-        # Si la similitud es mayor al umbral del 65%
-        if similarity > 65:
-            # Si no se especifica cantidad, asignar 1
-            if not quantity:
-                quantity = 1
-            # Convertir la cantidad en número, ya sea digitada o escrita
-            elif quantity.isdigit():
-                quantity = int(quantity)
-            else:
-                # Convertir el texto a número utilizando el diccionario
-                quantity = num_text_to_int.get(quantity, 1)
-
-            # Agregar al diccionario el plato con la cantidad correspondiente
-            order_dict[best_match] = quantity
-
-    return order_dict
-
-# Función para normalizar los nombres de los platos y manejar abreviaciones y variaciones
-def normalize_dish_name(dish_name):
-    """
-    Normaliza nombres comunes de los platos para manejar variaciones y abreviaciones.
-    """
-    dish_name = dish_name.lower()
-
-    # Diccionario de variaciones comunes (puedes agregar más)
-    dish_variations = {
-        "tortilla": ["tortilla", "tortillas"],
-        "tallarines verdes": ["tallarines", "tallarine", "tallarines verdes"],
-        "lomo saltado": ["lomo", "saltado", "lomo saltado"]
-    }
-
-    # Iterar sobre el diccionario de variaciones
-    for standard_name, variations in dish_variations.items():
-        if any(variation in dish_name for variation in variations):
-            return standard_name
-
-    # Si no se encuentra ninguna variación, retornar el nombre original
-    return dish_name
-
-# Ejemplo del menú
-menu = pd.DataFrame(menu)
-
-
 
