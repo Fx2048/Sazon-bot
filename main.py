@@ -5,8 +5,7 @@ from copy import deepcopy
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process  # Para similitud en nombres de distritos
 import re
-from openai import OpenAI
-
+import openai  # Revisa que tengas instalado openai
 
 # Inicializar las claves de session_state si no existen
 if "district_selected" not in st.session_state:
@@ -18,16 +17,14 @@ if "current_district" not in st.session_state:
 if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
-# Continúa con el resto del código...
-
-# Cargar el API key de OpenAI desde Streamlit Secrets (si se requiere para otros fines)
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+# Cargar el API key de OpenAI desde Streamlit Secrets (si es necesario)
+client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Configuración inicial de la página
 st.set_page_config(page_title="SazónBot", page_icon=":pot_of_food:")
 st.title("🍲 SazónBot")
 
-# Mostrar mensaje de bienvenida
+# Mensaje de bienvenida
 intro = """¡Bienvenido a Sazón Bot, el lugar donde todos tus antojos de almuerzo se hacen realidad!
 
 Comienza a chatear con Sazón Bot y descubre qué puedes pedir, cuánto cuesta y cómo realizar tu pago. ¡Estamos aquí para ayudarte a disfrutar del mejor almuerzo!"""
@@ -49,7 +46,6 @@ def filter_menu_by_district(menu, district_actual):
         return pd.DataFrame()  # Retornar un DataFrame vacío si el distrito es None
     return menu[menu['Distrito Disponible'].str.contains(district_actual, na=False)]
 
-
 # Función para verificar el distrito con similitud
 def verify_district(prompt, districts):
     if not prompt:
@@ -61,24 +57,10 @@ def verify_district(prompt, districts):
         return best_match
     return None
 
-
-
 # Función mejorada para extraer el pedido y la cantidad usando similitud
 def extract_order_and_quantity(prompt, menu):
     """
     Extrae la cantidad y el nombre de cada plato en el pedido del usuario utilizando coincidencias parciales.
-
-    Ejemplos de entrada y salida:
-    Entrada: “Quiero pedir 2 ceviches y 3 causas.”
-    Respuesta: {“Ceviche”: 2, “Causa”: 3}
-
-    Entrada: “Me gustaría 1 lomo saltado y 4 anticuchos.”
-    Respuesta: {“Lomo Saltado”: 1, “Anticuchos”: 4}
-
-    Restricciones:
-    - La similitud debe ser mayor al 75% para considerar una coincidencia válida.
-    - Si el prompt es None, retornar un diccionario vacío.
-    - Los nombres de los platos deben coincidir con los del menú proporcionado.
     """
 
     if not prompt:
@@ -96,56 +78,13 @@ def extract_order_and_quantity(prompt, menu):
         # Usar fuzzy matching para encontrar la mejor coincidencia del plato en el menú
         best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.partial_ratio)
         if similarity > 75:  # Si la similitud es mayor a un 75%, consideramos que es una coincidencia válida
-            # Si no se especifica una cantidad, asumir 1
             if not quantity:
-                quantity = 1
+                quantity = 1  # Si no se especifica una cantidad, asumir 1
             else:
                 quantity = int(quantity)
             order_dict[best_match] = quantity
 
     return order_dict
-
-# Interfaz para el usuario cuando aún no ha hecho el pedido
-if not st.session_state["district_selected"]:
-    # Verificar el distrito
-    district = verify_district(user_input, districts)
-    if not district:
-        response = f"Lo siento, pero no entregamos en ese distrito. Estos son los distritos disponibles: {', '.join(districts['Distrito'].tolist())}."
-    else:
-        st.session_state["district_selected"] = True
-        st.session_state["current_district"] = district
-        # Filtrar el menú por distrito y mostrarlo
-        filtered_menu = filter_menu_by_district(menu, district)
-        menu_display = format_menu(filtered_menu)
-
-        # Mostrar menú con ejemplos de pedidos
-        response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?**\n\nEjemplo: 'Quiero solicitar un plato de tallarines' (esto se interpretará como 1 unidad de tallarines)."
-
-else:
-    # Procesar el pedido con cantidades específicas o no
-    order_dict = extract_order_and_quantity(user_input, menu)
-    if not order_dict:
-        response = f"😊 No has seleccionado ningún plato del menú. Por favor revisa: 'Ejemplo de solicitud: 1 Pescado a la Plancha o Quiero un lomo saltado'."
-    else:
-        available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
-        if unavailable_orders:
-            response = f"Lo siento, los siguientes platos no están disponibles: {', '.join(unavailable_orders)}."
-        else:
-            response = f"Tu pedido ha sido registrado: {', '.join([f'{qty} x {dish}' for dish, qty in available_orders.items()])}. ¡Gracias!"
-
-
-# Ejemplo de prueba de la función con una entrada personalizada
-menu_df = pd.DataFrame({
-    'Plato': ['Ceviche', 'Anticucho', 'Lomo Saltado', 'Causa', 'Sopa Criolla'],
-    'Distrito Disponible': ['Miraflores', 'Miraflores', 'San Isidro', 'San Isidro', 'Miraflores']
-})
-
-# Pruebas con entradas variadas
-print(extract_order_and_quantity("Quiero pedir 2 ceviches y 3 causas.", menu_df))  # {'Ceviche': 2, 'Causa': 3}
-print(extract_order_and_quantity("Me gustaría 1 lomo saltado y 4 anticuchos.", menu_df))  # {'Lomo Saltado': 1, 'Anticucho': 4}
-print(extract_order_and_quantity("1 sopa criolla", menu_df))  # {'Sopa Criolla': 1}
-print(extract_order_and_quantity("3 anticuchos y 2 sopes criollas", menu_df))  # {'Anticucho': 3, 'Sopa Criolla': 2}
-
 
 # Función para verificar los pedidos contra el menú disponible
 def verify_order_with_menu(order_dict, menu):
@@ -185,8 +124,6 @@ initial_state = [
         "content": f"👨‍🍳 Antes de comenzar, ¿de dónde nos visitas? Por favor, menciona tu distrito (por ejemplo: Miraflores)."
     },
 ]
-if "current_district" not in st.session_state:
-    st.session_state["current_district"] = None
 
 # Inicializar la conversación si no existe en la sesión
 if "messages" not in st.session_state:
@@ -245,4 +182,3 @@ if user_input := st.chat_input("Escribe aquí..."):
     # Guardar el mensaje en la sesión
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.messages.append({"role": "assistant", "content": response})
-
