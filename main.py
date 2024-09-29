@@ -6,6 +6,20 @@ from fuzzywuzzy import fuzz
 from fuzzywuzzy import process  # Para similitud en nombres de distritos
 import re
 from openai import OpenAI
+
+
+# Inicializar las claves de session_state si no existen
+if "district_selected" not in st.session_state:
+    st.session_state["district_selected"] = False  # Indica si ya se seleccionó un distrito
+
+if "current_district" not in st.session_state:
+    st.session_state["current_district"] = None  # Almacena el distrito actual
+
+if "messages" not in st.session_state:
+    st.session_state["messages"] = []
+
+# Continúa con el resto del código...
+
 # Cargar el API key de OpenAI desde Streamlit Secrets (si se requiere para otros fines)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
