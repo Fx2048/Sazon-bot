@@ -49,6 +49,23 @@ def verify_district(prompt, districts):
     if similarity > 75:
         return best_match
     return None
+# Función para guardar el pedido en un archivo CSV
+def save_order_to_csv(order_dict, district, filename="orders.csv"):
+    orders_list = []
+    for dish, quantity in order_dict.items():
+        order_details = {
+            'Fecha y Hora': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            'Distrito': district,
+            'Plato': dish,
+            'Cantidad': quantity
+        }
+        orders_list.append(order_details)
+    
+    # Crear un DataFrame y guardar en CSV
+    df_orders = pd.DataFrame(orders_list)
+    
+    # Si el archivo ya existe, agregar sin sobrescribir la cabecera
+    df_orders.to_csv(filename, mode='a', header=not pd.read_csv(filename).empty if filename else True, index=False)
 
 # Función mejorada para extraer el pedido y la cantidad usando similitud
 def improved_extract_order_and_quantity(prompt, menu):
@@ -331,27 +348,32 @@ if user_input := st.chat_input("Escribe aquí..."):
     with st.chat_message("user", avatar="👤"):
         st.markdown(user_input)
 
-    if not st.session_state["district_selected"]:
-        district = verify_district(user_input, districts)
-        if not district:
-            response = f"Lo siento, pero no entregamos en ese distrito. Distritos disponibles: {', '.join(districts['Distrito'].tolist())}."
-        else:
-            st.session_state["district_selected"] = True
-            st.session_state["current_district"] = district
-            filtered_menu = filter_menu_by_district(menu, district)
-            menu_display = format_menu(filtered_menu)
-
-            response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?** Ejm: 2 Pescado a la Plancha."
+# Procesar el pedido después de que el distrito ya ha sido seleccionado
+if not st.session_state["district_selected"]:
+    district = verify_district(user_input, districts)
+    if not district:
+        response = f"Lo siento, pero no entregamos en ese distrito. Distritos disponibles: {', '.join(districts['Distrito'].tolist())}."
     else:
-        order_dict = improved_extract_order_and_quantity(user_input, menu)
-        if not order_dict:
-            response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato, ejm: 2 Pescado a la Plancha."
+        st.session_state["district_selected"] = True
+        st.session_state["current_district"] = district
+        filtered_menu = filter_menu_by_district(menu, district)
+        menu_display = format_menu(filtered_menu)
+
+        response = f"Gracias por proporcionar tu distrito: **{district}**. Aquí está el menú disponible para tu área:\n\n{menu_display}\n\n**¿Qué te gustaría pedir?** Ejm: 2 Pescado a la Plancha."
+else:
+    order_dict = improved_extract_order_and_quantity(user_input, menu)
+    if not order_dict:
+        response = "😊 No has seleccionado ningún plato del menú. Escribe la cantidad seguida del plato, ejm: 2 Pescado a la Plancha."
+    else:
+        available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
+        if unavailable_orders:
+            response = f"Lo siento, los siguientes platos no están disponibles: {', '.join(unavailable_orders)}."
         else:
-            available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
-            if unavailable_orders:
-                response = f"Lo siento, los siguientes platos no están disponibles: {', '.join(unavailable_orders)}."
-            else:
-                response = f"Tu pedido ha sido registrado: {', '.join([f'{qty} x {dish}' for dish, qty in available_orders.items()])}. ¡Gracias!"
+            # Guardar el pedido en un archivo CSV
+            save_order_to_csv(available_orders, st.session_state["current_district"])
+
+            response = f"Tu pedido ha sido registrado: {', '.join([f'{qty} x {dish}' for dish, qty in available_orders.items()])}. ¡Gracias!"
+
 
     # Mostrar la respuesta del asistente
     with st.chat_message("assistant", avatar="🍲"):
