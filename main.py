@@ -5,6 +5,7 @@ from copy import deepcopy
 from fuzzywuzzy import fuzz
 from fuzzywuzzy import process  # Para similitud en nombres de distritos
 import re
+
 from openai import OpenAI
 # Cargar el API key de OpenAI desde Streamlit Secrets (si se requiere para otros fines)
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
@@ -48,9 +49,7 @@ def verify_district(prompt, districts):
     return None
 
 
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
-import re
+
 
 # Función mejorada para extraer el pedido y la cantidad usando similitud
 def extract_order_and_quantity(prompt, menu):
@@ -96,11 +95,6 @@ menu_df = pd.DataFrame({
     'Distrito Disponible': ['Miraflores', 'Miraflores', 'San Isidro', 'San Isidro', 'Miraflores']
 })
 
-# Pruebas con entradas variadas
-print(extract_order_and_quantity("Quiero pedir 2 ceviches y 3 causas.", menu_df))  # {'Ceviche': 2, 'Causa': 3}
-print(extract_order_and_quantity("Me gustaría 1 lomo saltado y 4 anticuchos.", menu_df))  # {'Lomo Saltado': 1, 'Anticucho': 4}
-print(extract_order_and_quantity("1 sopa criolla", menu_df))  # {'Sopa Criolla': 1}
-print(extract_order_and_quantity("3 anticuchos y 2 sopes criollas", menu_df))  # {'Anticucho': 3, 'Sopa Criolla': 2}
 
 
 # Función para verificar los pedidos contra el menú disponible
@@ -186,7 +180,7 @@ if user_input := st.chat_input("Escribe aquí..."):
         # Procesar el pedido con cantidades específicas
         order_dict = extract_order_and_quantity(user_input, menu)
         if not order_dict:
-            response = "😊 No has seleccionado ningún plato del menú. Por favor revisa."
+            response = "😊 No has seleccionado ningún plato del menú. Por favor revisa: "Ejemplo de solicitud: 1 Pescado a la Plancha""
         else:
             available_orders, unavailable_orders = verify_order_with_menu(order_dict, menu)
             if unavailable_orders:
@@ -201,3 +195,8 @@ if user_input := st.chat_input("Escribe aquí..."):
     # Guardar el mensaje en la sesión
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.messages.append({"role": "assistant", "content": response})
+# Pruebas con entradas variadas
+print(extract_order_and_quantity("Quiero pedir 2 ceviches y 3 causas.", menu_df))  # {'Ceviche': 2, 'Causa': 3}
+print(extract_order_and_quantity("Me gustaría 1 lomo saltado y 4 anticuchos.", menu_df))  # {'Lomo Saltado': 1, 'Anticucho': 4}
+print(extract_order_and_quantity("1 sopa criolla", menu_df))  # {'Sopa Criolla': 1}
+print(extract_order_and_quantity("3 anticuchos y 2 sopes criollas", menu_df))  # {'Anticucho': 3, 'Sopa Criolla': 2}
