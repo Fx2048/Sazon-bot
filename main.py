@@ -183,7 +183,15 @@ if user_input := st.chat_input("Escribe aquí..."):
     st.session_state.messages.append({"role": "user", "content": user_input})
     st.session_state.messages.append({"role": "assistant", "content": response})
 
+import re
+from fuzzywuzzy import fuzz, process
+import pandas as pd
+
+# Función mejorada para extraer el pedido y la cantidad usando similitud
 def improved_extract_order_and_quantity(prompt, menu):
+    """
+    Extrae la cantidad y el nombre de cada plato en el pedido del usuario utilizando coincidencias parciales y mejoradas.
+    """
     if not prompt:
         return {}
 
@@ -200,11 +208,14 @@ def improved_extract_order_and_quantity(prompt, menu):
     for quantity, dish in orders:
         dish_cleaned = dish.strip()  # Limpiar los espacios adicionales
 
-        # Usar fuzz.token_sort_ratio para obtener la mejor coincidencia con el menú
-        best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.token_sort_ratio)
+        # Preprocesar las variaciones comunes de los nombres de los platos
+        dish_cleaned = normalize_dish_name(dish_cleaned)
 
-        # Si la similitud es mayor al umbral del 60%
-        if similarity > 60:
+        # Usar fuzz.token_set_ratio para obtener la mejor coincidencia con el menú
+        best_match, similarity = process.extractOne(dish_cleaned, menu_items, scorer=fuzz.token_set_ratio)
+
+        # Si la similitud es mayor al umbral del 65%
+        if similarity > 65:
             # Si no se especifica cantidad, asignar 1
             if not quantity:
                 quantity = 1
@@ -220,10 +231,30 @@ def improved_extract_order_and_quantity(prompt, menu):
 
     return order_dict
 
-# Ejemplo del menú
-menu_df = pd.DataFrame(menu)
+# Función para normalizar los nombres de los platos y manejar abreviaciones y variaciones
+def normalize_dish_name(dish_name):
+    """
+    Normaliza nombres comunes de los platos para manejar variaciones y abreviaciones.
+    """
+    dish_name = dish_name.lower()
 
-# Pruebas con entradas variadas
-print(improved_extract_order_and_quantity("Quiero 4 tortillas y dos tallarines.", menu_df))  # {'Tortillas': 4, 'Tallarines': 2}
-print(improved_extract_order_and_quantity("Me gustaría tres ceviches y una sopa criolla.", menu_df))  # {'Ceviche': 3, 'Sopa Criolla': 1}
-print(improved_extract_order_and_quantity("1 ceviche", menu_df))  # {'Ceviche': 1}
+    # Diccionario de variaciones comunes (puedes agregar más)
+    dish_variations = {
+        "tortilla": ["tortilla", "tortillas"],
+        "tallarines verdes": ["tallarines", "tallarine", "tallarines verdes"],
+        "lomo saltado": ["lomo", "saltado", "lomo saltado"]
+    }
+
+    # Iterar sobre el diccionario de variaciones
+    for standard_name, variations in dish_variations.items():
+        if any(variation in dish_name for variation in variations):
+            return standard_name
+
+    # Si no se encuentra ninguna variación, retornar el nombre original
+    return dish_name
+
+# Ejemplo del menú
+menu = pd.DataFrame(menu)
+
+
+
