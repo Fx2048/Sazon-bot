@@ -67,4 +67,3 @@ else:
             response = f"Lo siento, los siguientes platos no están disponibles: {', '.join(unavailable_orders)}."
         else:
             response = f"Tu pedido ha sido registrado: {', '.join([f'{qty} x {dish}' for dish, qty in available_orders.items()])}. ¡Gracias!"
-
